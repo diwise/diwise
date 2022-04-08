@@ -1,0 +1,166 @@
+version: '3'
+services:
+  iot-agent:
+    image: 'ghcr.io/diwise/iot-agent@sha256:0c10e7dc0d0269ce90ee165af95be8e3d5a3599af46ed81a51557cac0b72439f'
+    restart: always
+    depends_on:
+      - rabbitmq
+      - iot-core
+      - iot-device-mgmt
+    environment:
+      MQTT_DISABLED: 'true'
+      RABBITMQ_HOST: 'rabbitmq'
+      DEV_MGMT_URL: 'http://iot-device-mgmt:8080'
+      OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
+    ports:
+      - '8090:8080'
+
+
+  iot-core:
+    image: 'ghcr.io/diwise/iot-core@sha256:70d53cf8d4ff83dfad58e954163b809d658407aaf9c1d55003a76c4c335b8cd5'
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      RABBITMQ_HOST: 'rabbitmq'
+      OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
+
+
+  iot-device-mgmt:
+    image: 'ghcr.io/diwise/iot-device-mgmt@sha256:00302e43e60323692e1c94d1979cacd2b4f38d44f920e8a232040e7b8d5e002c'
+    restart: always
+    environment:
+      RABBITMQ_HOST: 'rabbitmq'
+      OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
+    ports:
+      - '8080'
+
+
+  iot-transform-fiware:
+    image: 'ghcr.io/diwise/iot-transform-fiware@sha256:0ce3a1e34002d430f48220e8b82a434dd6f498d9ff534e81088078ff3eff41b7'
+    restart: always
+    depends_on:
+      - rabbitmq
+      - context-broker
+    environment:
+      NGSI_CB_URL: 'http://context-broker:8080'
+      RABBITMQ_HOST: 'rabbitmq'
+      OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
+    depends_on:
+      - context-broker
+
+
+  rabbitmq: 
+    image: 'bitnami/rabbitmq:3.8'
+    #image: 'arm64v8/rabbitmq:3.8'
+    environment:
+      RABBITMQ_DEFAULT_USER: 'user'
+      RABBITMQ_DEFAULT_PASS: 'bitnami'
+    ports:
+      - '4369'
+      - '5672'
+      - '25672'
+      - '15672'
+    volumes:
+      - 'rabbitmq_data:/bitnami'
+
+
+  context-broker:
+    image: 'ghcr.io/diwise/context-broker@sha256:53bb3e9ca15164afd3e873c5ac8e56e40e107caa9cb99c47d5a6c748a5dc4bfb'
+    restart: always
+    environment:
+      OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
+    depends_on:
+      - orion-ld
+    volumes:
+      - ./configs/diwise/context-broker.yaml:/opt/diwise/config/default.yaml
+    ports:
+      - '8081:8080'
+
+
+  orion-ld:
+    image: 'quay.io/fiware/orion-ld@sha256:ea838e5b405170b6d42af9035a30454a21870f7f3738db73da27585bf6a478b3'
+    restart: always
+    environment:
+      ORIONLD_MONGO_HOST: 'mongodb'
+      ORIONLD_MONGO_USER: 'admin'
+      ORIONLD_MONGO_PASSWORD: 'password'
+      ORIONLD_LOG_FOR_HUMANS: 'TRUE'
+      ORIONLD_TROE:	'FALSE'
+      ORIONLD_DISABLE_FILE_LOG: 'TRUE'
+    depends_on:
+      - mongodb
+    ports:
+      - '8082:1026'
+
+
+  mongodb:
+    image: mongo:5
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: 'admin'
+      MONGO_INITDB_ROOT_PASSWORD: 'password'
+    ports:
+      - '27017'
+    command: --nojournal --quiet
+    volumes:
+      - mongo-db:/data
+  
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_SERVER: 'mongodb'
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: 'true'
+      ME_CONFIG_MONGODB_AUTH_DATABASE: 'admin'
+      ME_CONFIG_MONGODB_ADMINUSERNAME: 'admin'
+      ME_CONFIG_MONGODB_ADMINPASSWORD: 'password'
+      ME_CONFIG_BASICAUTH_USERNAME: ''
+    depends_on:
+        - mongodb
+    ports:
+      - '8083:8081'
+
+
+  otel-collector:
+    image: 'otel/opentelemetry-collector:0.48.0'
+    command: '--config /etc/otel-config.yaml'
+    volumes:
+     - ./configs/opentelemetry/otel-config.yaml:/etc/otel-config.yaml
+    restart: always
+    ports:
+      - '4318' 
+
+
+  tempo:
+    image: grafana/tempo:latest
+    command: [ '-config.file=/etc/tempo.yaml' ]
+    volumes:
+      - ./configs/tempo/tempo-local.yaml:/etc/tempo.yaml
+      - /tmp/tempo-data/:/tmp/tempo
+    ports:
+      - '14268'  # jaeger ingest
+      - '3200'   # tempo
+      - '4317'  # otlp grpc
+      - '4318'  # otlp http
+      - '9411'   # zipkin
+
+  
+  grafana:
+    image: grafana/grafana:8.4.5
+    environment:
+      GF_SECURITY_ADMIN_USER: diwise
+      GF_SECURITY_ADMIN_PASSWORD: diwise
+    volumes:
+      - ./configs/grafana/datasources:/etc/grafana/provisioning/datasources
+      - grafana-data:/var/lib/grafana
+    ports: 
+      - '8088:3000'
+
+
+volumes:
+  rabbitmq_data:
+    driver: local
+  grafana-data:
+  mongo-db: ~
