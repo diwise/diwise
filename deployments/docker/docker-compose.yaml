@@ -1,7 +1,7 @@
 version: '3'
 services:
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent@sha256:0c10e7dc0d0269ce90ee165af95be8e3d5a3599af46ed81a51557cac0b72439f'
+    image: 'ghcr.io/diwise/iot-agent@sha256:8949b909a8e5221a510dc8472703c9a299a1efaa7973a2e35872fc2a4cdd2941'
     restart: always
     depends_on:
       - rabbitmq
@@ -27,11 +27,13 @@ services:
 
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt@sha256:00302e43e60323692e1c94d1979cacd2b4f38d44f920e8a232040e7b8d5e002c'
+    image: 'ghcr.io/diwise/iot-device-mgmt@sha256:d63ff06af12302ec54c57ea1d2687a2918380d716b9596bde34df24d2fcb2076'
     restart: always
     environment:
       RABBITMQ_HOST: 'rabbitmq'
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
+    volumes:
+      - ./configs/diwise/devices.csv:/opt/diwise/config/devices.csv
     ports:
       - '8080'
 
