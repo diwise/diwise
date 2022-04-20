@@ -5,5 +5,9 @@ tenants:
     - endpoint: http://orion-ld:1026
       information:
       - entities:
+        - idPattern: ^urn:ngsi-ld:AirQualityObserved:.+
+          type: AirQualityObserved
         - idPattern: ^urn:ngsi-ld:WaterQualityObserved:.+
           type: WaterQualityObserved
+        - idPattern: ^urn:ngsi-ld:WeatherObserved:.+
+          type: WeatherObserved
