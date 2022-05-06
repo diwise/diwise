@@ -1,7 +1,7 @@
 version: '3'
 services:
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent@sha256:369c6456a97572ac22430b5bced49bfb0c2d472a0253a4de11c52f001f47f992'
+    image: 'ghcr.io/diwise/iot-agent@sha256:10387eb4f8bc10b9d722f4dcfee07beae9e3285523f12c355a0fe715a2cffc5b'
     restart: always
     depends_on:
       - rabbitmq
@@ -17,7 +17,7 @@ services:
 
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core@sha256:e60cfa0c5bf706697f51e42f56606192dbfede8bc38b70c18afb8faa6a4f2ea6'
+    image: 'ghcr.io/diwise/iot-core@sha256:496c3c44075b82f94f2de53e5fea10b4395fbd4c03782e133585806fae5c75c5'
     restart: always
     depends_on:
       - rabbitmq
@@ -28,7 +28,7 @@ services:
 
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt@sha256:3f5a22707b2b484d1e8cbde9416a5cc3bcdcc55fb5b7f2f874ceabdede415fca'
+    image: 'ghcr.io/diwise/iot-device-mgmt@sha256:10cf0fb65c753d5b4a0699d4a2f58f34316c2e19d523f69dcaaeabd692cfdb33'
     restart: always
     environment:
       RABBITMQ_HOST: 'rabbitmq'
@@ -40,7 +40,7 @@ services:
 
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware@sha256:50d4277af2bb1c94f5838d322169fc66a42d4c5e4dcbd2fda7223a5ad8c692d8'
+    image: 'ghcr.io/diwise/iot-transform-fiware@sha256:ffa799941a21a103ed34179328a8e7bb4ca6b8e3f95436cd84578b2440aa00ab'
     restart: always
     depends_on:
       - rabbitmq
@@ -49,8 +49,6 @@ services:
       NGSI_CB_URL: 'http://context-broker:8080'
       RABBITMQ_HOST: 'rabbitmq'
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
-    depends_on:
-      - context-broker
 
 
   rabbitmq: 
@@ -69,7 +67,7 @@ services:
 
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker@sha256:53bb3e9ca15164afd3e873c5ac8e56e40e107caa9cb99c47d5a6c748a5dc4bfb'
+    image: 'ghcr.io/diwise/context-broker@sha256:472968564128d1500c60a24c1f2365892f6af33d1e635c3ddd7d1595d09f50ab'
     restart: always
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
@@ -151,7 +149,7 @@ services:
 
   
   grafana:
-    image: grafana/grafana:8.4.5
+    image: grafana/grafana:8.4.7
     environment:
       GF_SECURITY_ADMIN_USER: diwise
       GF_SECURITY_ADMIN_PASSWORD: diwise
