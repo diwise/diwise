@@ -1,0 +1,2 @@
+devEUI;internalID;lat;lon;where;types;decoder
+a81758fffe06bfa3;intern-a81758fffe06bfa3;62.39160;17.30723;water;urn:oma:lwm2m:ext:3303,urn:oma:lwm2m:ext:3302,urn:oma:lwm2m:ext:3301;elsys_codec
