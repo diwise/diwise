@@ -1,7 +1,7 @@
 version: '3'
 services:
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent@sha256:10387eb4f8bc10b9d722f4dcfee07beae9e3285523f12c355a0fe715a2cffc5b'
+    image: 'ghcr.io/diwise/iot-agent@sha256:cb76fbbca38a81ce42aa3c8dff71ac4389ba2b5322749c2a1dcf58552395b799'
     restart: always
     depends_on:
       - rabbitmq
@@ -11,13 +11,14 @@ services:
       MQTT_DISABLED: 'true'
       RABBITMQ_HOST: 'rabbitmq'
       DEV_MGMT_URL: 'http://iot-device-mgmt:8080'
+      MSG_FWD_ENDPOINT: 'http://iot-agent:8080/api/v0/messages'
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
     ports:
       - '8090:8080'
 
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core@sha256:496c3c44075b82f94f2de53e5fea10b4395fbd4c03782e133585806fae5c75c5'
+    image: 'ghcr.io/diwise/iot-core@sha256:6fbc48022c52ffb396f2bd3782b1244f75d010072816cceddf7299e3fdcae6fc'
     restart: always
     depends_on:
       - rabbitmq
