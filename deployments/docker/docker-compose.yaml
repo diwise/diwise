@@ -18,7 +18,7 @@ services:
 
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core@sha256:6fbc48022c52ffb396f2bd3782b1244f75d010072816cceddf7299e3fdcae6fc'
+    image: 'ghcr.io/diwise/iot-core@sha256:ba3759127240d259c3e5b4709a54fdec3cc7820b76f8f3e913c80d110711a8b2'
     restart: always
     depends_on:
       - rabbitmq
@@ -41,7 +41,7 @@ services:
 
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware@sha256:ffa799941a21a103ed34179328a8e7bb4ca6b8e3f95436cd84578b2440aa00ab'
+    image: 'ghcr.io/diwise/iot-transform-fiware@sha256:247475da09df0248d45249c796c1c520877a8c22eb3bd506e705da8611c2f2ab'
     restart: always
     depends_on:
       - rabbitmq
