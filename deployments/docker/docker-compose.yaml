@@ -1,7 +1,7 @@
 version: '3'
 services:
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent@sha256:cb76fbbca38a81ce42aa3c8dff71ac4389ba2b5322749c2a1dcf58552395b799'
+    image: 'ghcr.io/diwise/iot-agent@sha256:c22eafe89d13741d4deb0fc5e66a742478a95d0cd40bac8ca851f6aa957a3d61'
     restart: always
     depends_on:
       - rabbitmq
@@ -18,7 +18,7 @@ services:
 
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core@sha256:ba3759127240d259c3e5b4709a54fdec3cc7820b76f8f3e913c80d110711a8b2'
+    image: 'ghcr.io/diwise/iot-core@sha256:e96b9825784ab51526b38ffac1bf24e0e4b1454f8dd4842dbc34fae7784528b7'
     restart: always
     depends_on:
       - rabbitmq
@@ -41,7 +41,7 @@ services:
 
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware@sha256:247475da09df0248d45249c796c1c520877a8c22eb3bd506e705da8611c2f2ab'
+    image: 'ghcr.io/diwise/iot-transform-fiware@sha256:cebd666ee5adfd786247a827a9c738503f6ccbe7ccd0076bb24eec219e531dad'
     restart: always
     depends_on:
       - rabbitmq
