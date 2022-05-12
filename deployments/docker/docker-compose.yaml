@@ -41,7 +41,7 @@ services:
 
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware@sha256:cebd666ee5adfd786247a827a9c738503f6ccbe7ccd0076bb24eec219e531dad'
+    image: 'ghcr.io/diwise/iot-transform-fiware@sha256:49902571806a4160d9531a1062aadaddc9f84df5031527d0ee93a1fcaf0e86c0'
     restart: always
     depends_on:
       - rabbitmq
