@@ -1,0 +1,685 @@
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: context-broker
+    app.kubernetes.io/part-of: cip-platform
+  name: context-broker
+  namespace: diwise
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: iot-agent
+    app.kubernetes.io/part-of: iot-platform
+  name: iot-agent
+  namespace: diwise
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: iot-core
+    app.kubernetes.io/part-of: iot-platform
+  name: iot-core
+  namespace: diwise
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: iot-device-mgmt
+    app.kubernetes.io/part-of: iot-platform
+  name: iot-device-mgmt
+  namespace: diwise
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: iot-transform-fiware
+    app.kubernetes.io/part-of: iot-platform
+  name: iot-transform-fiware
+  namespace: diwise
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/component: orion-ld
+    app.kubernetes.io/name: mongodb
+    app.kubernetes.io/part-of: cip-platform
+  name: mongodb
+  namespace: diwise
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/component: orion-ld
+    app.kubernetes.io/name: orion-ld
+    app.kubernetes.io/part-of: cip-platform
+  name: orion-ld
+  namespace: diwise
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: context-broker
+    app.kubernetes.io/part-of: cip-platform
+  name: context-broker
+  namespace: diwise
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: context-broker
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: iot-agent
+    app.kubernetes.io/part-of: iot-platform
+  name: iot-agent
+  namespace: diwise
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: iot-agent
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: iot-device-mgmt
+    app.kubernetes.io/part-of: iot-platform
+  name: iot-device-mgmt
+  namespace: diwise
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: iot-device-mgmt
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: orion-ld
+    app.kubernetes.io/name: mongo-express
+    app.kubernetes.io/part-of: cip-platform
+  name: mongo-express
+  namespace: diwise
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8081
+  selector:
+    app.kubernetes.io/name: mongo-express
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: orion-ld
+    app.kubernetes.io/name: mongodb
+    app.kubernetes.io/part-of: cip-platform
+  name: mongodb
+  namespace: diwise
+spec:
+  ports:
+  - name: default-port
+    port: 27017
+    protocol: TCP
+    targetPort: 27017
+  selector:
+    app.kubernetes.io/name: mongodb
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: orion-ld
+    app.kubernetes.io/name: orion-ld
+    app.kubernetes.io/part-of: cip-platform
+  name: orion-ld
+  namespace: diwise
+spec:
+  ports:
+  - name: default-port
+    port: 80
+    protocol: TCP
+    targetPort: 1026
+  selector:
+    app.kubernetes.io/name: orion-ld
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: context-broker
+    app.kubernetes.io/part-of: cip-platform
+  name: context-broker
+  namespace: diwise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: context-broker
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: context-broker
+    spec:
+      containers:
+      - env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: ghcr.io/diwise/context-broker@sha256:472968564128d1500c60a24c1f2365892f6af33d1e635c3ddd7d1595d09f50ab
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: default-port
+        name: context-broker
+        ports:
+        - containerPort: 8080
+          name: default-port
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 250m
+            memory: 250Mi
+          requests:
+            cpu: 50m
+            memory: 100Mi
+        startupProbe:
+          httpGet:
+            path: /health
+            port: default-port
+        volumeMounts:
+        - mountPath: /opt/diwise/config
+          name: context-broker-cfg
+          readOnly: true
+      serviceAccountName: context-broker
+      volumes:
+      - configMap:
+          name: context-broker-config-cm
+        name: context-broker-cfg
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: iot-agent
+    app.kubernetes.io/part-of: iot-platform
+  name: iot-agent
+  namespace: diwise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: iot-agent
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: iot-agent
+    spec:
+      containers:
+      - env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: DEV_MGMT_URL
+          value: http://iot-device-mgmt
+        - name: MQTT_HOST
+          valueFrom:
+            secretKeyRef:
+              key: mqtt-host
+              name: authn-mqtt
+        - name: MQTT_TOPIC_0
+          valueFrom:
+            secretKeyRef:
+              key: mqtt-topic
+              name: authn-mqtt
+        - name: MQTT_USER
+          valueFrom:
+            secretKeyRef:
+              key: mqtt-user
+              name: authn-mqtt
+        - name: MQTT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: mqtt-password
+              name: authn-mqtt
+        - name: MSG_FWD_ENDPOINT
+          value: http://iot-agent/api/v0/messages
+        - name: RABBITMQ_HOST
+          value: rabbitmq
+        image: ghcr.io/diwise/iot-agent@sha256:c22eafe89d13741d4deb0fc5e66a742478a95d0cd40bac8ca851f6aa957a3d61
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: default-port
+        name: iot-agent
+        ports:
+        - containerPort: 8080
+          name: default-port
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 250m
+            memory: 250Mi
+          requests:
+            cpu: 50m
+            memory: 100Mi
+        startupProbe:
+          httpGet:
+            path: /health
+            port: default-port
+      serviceAccountName: iot-agent
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: iot-core
+    app.kubernetes.io/part-of: iot-platform
+  name: iot-core
+  namespace: diwise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: iot-core
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: iot-core
+    spec:
+      containers:
+      - env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: DEV_MGMT_URL
+          value: http://iot-device-mgmt
+        - name: RABBITMQ_HOST
+          value: rabbitmq
+        image: ghcr.io/diwise/iot-core@sha256:e96b9825784ab51526b38ffac1bf24e0e4b1454f8dd4842dbc34fae7784528b7
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: default-port
+        name: iot-core
+        ports:
+        - containerPort: 8080
+          name: default-port
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 250m
+            memory: 250Mi
+          requests:
+            cpu: 50m
+            memory: 100Mi
+        startupProbe:
+          httpGet:
+            path: /health
+            port: default-port
+      serviceAccountName: iot-core
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: iot-device-mgmt
+    app.kubernetes.io/part-of: iot-platform
+  name: iot-device-mgmt
+  namespace: diwise
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: iot-device-mgmt
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: iot-device-mgmt
+    spec:
+      containers:
+      - image: ghcr.io/diwise/iot-device-mgmt@sha256:10cf0fb65c753d5b4a0699d4a2f58f34316c2e19d523f69dcaaeabd692cfdb33
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: default-port
+        name: iot-device-mgmt
+        ports:
+        - containerPort: 8080
+          name: default-port
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 250m
+            memory: 250Mi
+          requests:
+            cpu: 50m
+            memory: 100Mi
+        startupProbe:
+          httpGet:
+            path: /health
+            port: default-port
+        volumeMounts:
+        - mountPath: /opt/diwise/config
+          name: conf-volume-devices-cfg
+          readOnly: true
+      serviceAccountName: iot-device-mgmt
+      volumes:
+      - configMap:
+          name: known-devices-cm
+        name: conf-volume-devices-cfg
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: iot-transform-fiware
+    app.kubernetes.io/part-of: iot-platform
+  name: iot-transform-fiware
+  namespace: diwise
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: iot-transform-fiware
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: iot-transform-fiware
+    spec:
+      containers:
+      - env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: NGSI_CB_URL
+          value: http://context-broker
+        - name: RABBITMQ_HOST
+          value: rabbitmq
+        image: ghcr.io/diwise/iot-transform-fiware@sha256:85a5efadf4d37d5170c7d03b61f43be6e96c528186075c29572aa491e50f7e7e
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: default-port
+        name: iot-transform-fiware
+        ports:
+        - containerPort: 8080
+          name: default-port
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 250m
+            memory: 250Mi
+          requests:
+            cpu: 50m
+            memory: 100Mi
+        startupProbe:
+          httpGet:
+            path: /health
+            port: default-port
+      serviceAccountName: iot-transform-fiware
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: orion-ld
+    app.kubernetes.io/name: mongo-express
+    app.kubernetes.io/part-of: cip-platform
+  name: mongo-express
+  namespace: diwise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mongo-express
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mongo-express
+    spec:
+      containers:
+      - env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: ME_CONFIG_MONGODB_SERVER
+          value: mongodb
+        - name: ME_CONFIG_MONGODB_PORT
+          value: "27017"
+        - name: ME_CONFIG_MONGODB_ENABLE_ADMIN
+          value: "true"
+        - name: ME_CONFIG_MONGODB_AUTH_DATABASE
+          value: admin
+        - name: ME_CONFIG_MONGODB_ADMINUSERNAME
+          value: admin
+        - name: ME_CONFIG_MONGODB_ADMINPASSWORD
+          value: password
+        image: mongo-express
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /
+            port: default-port
+        name: mongo-express
+        ports:
+        - containerPort: 8081
+          name: default-port
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 1
+            memory: 1Gi
+          requests:
+            cpu: 500m
+            memory: 250Mi
+        startupProbe:
+          httpGet:
+            path: /
+            port: default-port
+      serviceAccountName: mongodb
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: orion-ld
+    app.kubernetes.io/name: mongodb
+    app.kubernetes.io/part-of: cip-platform
+  name: mongodb
+  namespace: diwise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mongodb
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mongodb
+    spec:
+      containers:
+      - env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: admin
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: password
+        image: mongo:5
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: default-port
+        name: mongodb
+        ports:
+        - containerPort: 27017
+          name: default-port
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 1
+            memory: 1Gi
+          requests:
+            cpu: 500m
+            memory: 250Mi
+        startupProbe:
+          httpGet:
+            path: /health
+            port: default-port
+        volumeMounts:
+        - mountPath: /data/db
+          name: db-volume
+      serviceAccountName: mongodb
+      volumes:
+      - emptyDir: {}
+        name: db-volume
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: orion-ld
+    app.kubernetes.io/name: orion-ld
+    app.kubernetes.io/part-of: cip-platform
+  name: orion-ld
+  namespace: diwise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: orion-ld
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: orion-ld
+    spec:
+      containers:
+      - command:
+        - orionld
+        - -fg
+        - -multiservice
+        - -ngsiv1Autocast
+        - -logLevel
+        - DEBUG
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: ORIONLD_MONGO_HOST
+          value: mongodb
+        - name: ORIONLD_MONGO_USER
+          value: admin
+        - name: ORIONLD_MONGO_PASSWORD
+          value: password
+        - name: ORIONLD_TROE
+          value: "FALSE"
+        - name: ORIONLD_DISABLE_FILE_LOG
+          value: "TRUE"
+        image: quay.io/fiware/orion-ld@sha256:ea838e5b405170b6d42af9035a30454a21870f7f3738db73da27585bf6a478b3
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /ngsi-ld/v1/types
+            port: default-port
+        name: orion-ld
+        ports:
+        - containerPort: 1026
+          name: default-port
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 1
+            memory: 1Gi
+          requests:
+            cpu: 500m
+            memory: 250Mi
+        startupProbe:
+          httpGet:
+            path: /ngsi-ld/v1/types
+            port: default-port
+      serviceAccountName: orion-ld

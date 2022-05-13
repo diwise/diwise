@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ssh://github.com/diwise/iot-agent-config?depth=1
+- ssh://github.com/diwise/iot-core-config?depth=1
+- ssh://github.com/diwise/iot-device-mgmt-config?depth=1
+- ssh://github.com/diwise/iot-transform-fiware-config?depth=1
+
+transformers:
+  - global-labels.yaml
