@@ -1,7 +1,7 @@
 version: '3'
 services:
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent@sha256:ae6d92e633b65be26384019f15cc3ea93110932a3276f100fa43c2d80b17b14d'
+    image: 'ghcr.io/diwise/iot-agent@sha256:a4b5124a81fe2c72a885a2ef8375cc4c0406b227ea395db2fafe240b898b10ea'
     restart: always
     depends_on:
       - rabbitmq
@@ -29,7 +29,7 @@ services:
 
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt@sha256:10cf0fb65c753d5b4a0699d4a2f58f34316c2e19d523f69dcaaeabd692cfdb33'
+    image: 'ghcr.io/diwise/iot-device-mgmt@sha256:9356c8c1f3d85201b4c0492e2d3decdbb94107a62073e5ce1c0ff44c110d1a1c'
     restart: always
     environment:
       RABBITMQ_HOST: 'rabbitmq'
@@ -40,8 +40,20 @@ services:
       - '8080'
 
 
+  iot-device-mgmt-web:
+    image: 'ghcr.io/diwise/iot-device-mgmt-web@sha256:027a0caf79ed39e0069a6208be2f50d87c1599d3c71934b95db4c67a33bacfeb'
+    restart: always
+    depends_on:
+      - iot-device-mgmt
+    environment:
+      DEVICE_MGMT_URL: http://iot-device-mgmt:8080
+      OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
+    ports:
+      - '8080:8080'
+
+
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware@sha256:889c0e9d7617e61261851ecce2fd2692e705246a1eb262eb1b57d7843385501c'
+    image: 'ghcr.io/diwise/iot-transform-fiware@sha256:6e6433538874f145e29ee7ebbaf7631471c40953ab13f9ada21c6ad126662289'
     restart: always
     depends_on:
       - rabbitmq
@@ -68,7 +80,7 @@ services:
 
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker@sha256:472968564128d1500c60a24c1f2365892f6af33d1e635c3ddd7d1595d09f50ab'
+    image: 'ghcr.io/diwise/context-broker@sha256:47a2d1610be9cc32f856e11e14c0d2a23087adca88138bf6b70be213d5322831'
     restart: always
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
