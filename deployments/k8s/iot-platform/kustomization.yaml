@@ -5,6 +5,7 @@ resources:
 - ssh://github.com/diwise/iot-agent-config?depth=1
 - ssh://github.com/diwise/iot-core-config?depth=1
 - ssh://github.com/diwise/iot-device-mgmt-config?depth=1
+- ssh://github.com/diwise/iot-device-mgmt-web-config?depth=1
 - ssh://github.com/diwise/iot-transform-fiware-config?depth=1
 
 transformers:
