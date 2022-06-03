@@ -29,7 +29,7 @@ services:
 
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt@sha256:9356c8c1f3d85201b4c0492e2d3decdbb94107a62073e5ce1c0ff44c110d1a1c'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-ed9f50660dcd846d0efe90e72317df46f3adb7a7'
     restart: always
     environment:
       RABBITMQ_HOST: 'rabbitmq'
@@ -64,7 +64,7 @@ services:
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
 
 
-  rabbitmq: 
+  rabbitmq:
     image: 'bitnami/rabbitmq:3.8'
     #image: 'arm64v8/rabbitmq:3.8'
     environment:
@@ -118,7 +118,7 @@ services:
     command: --nojournal --quiet
     volumes:
       - mongo-db:/data
-  
+
 
   mongo-express:
     image: mongo-express
@@ -144,7 +144,7 @@ services:
      - ./configs/opentelemetry/otel-config.yaml:/etc/otel-config.yaml
     restart: always
     ports:
-      - '4318' 
+      - '4318'
 
 
   tempo:
@@ -160,7 +160,7 @@ services:
       - '4318'  # otlp http
       - '9411'   # zipkin
 
-  
+
   grafana:
     image: grafana/grafana:8.4.7
     environment:
@@ -169,7 +169,7 @@ services:
     volumes:
       - ./configs/grafana/datasources:/etc/grafana/provisioning/datasources
       - grafana-data:/var/lib/grafana
-    ports: 
+    ports:
       - '8088:3000'
 
 
