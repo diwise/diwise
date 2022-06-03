@@ -80,7 +80,7 @@ services:
 
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker@sha256:47a2d1610be9cc32f856e11e14c0d2a23087adca88138bf6b70be213d5322831'
+    image: 'ghcr.io/diwise/context-broker:prod-6092b4aaff68aeea96a9890c1e0c949a9e0a17f9'
     restart: always
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
