@@ -1,7 +1,7 @@
 version: '3'
 services:
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent@sha256:a4b5124a81fe2c72a885a2ef8375cc4c0406b227ea395db2fafe240b898b10ea'
+    image: 'ghcr.io/diwise/iot-agent:prod-c75c19189ed0402f66ff6687a6a9acba31a48840'
     restart: always
     depends_on:
       - rabbitmq
@@ -29,7 +29,7 @@ services:
 
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-2079682e52692648424604f30478fe4c589c02d6'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-6e7a6092418bd5a62de65734d866a054c4454d69'
     restart: always
     environment:
       RABBITMQ_HOST: 'rabbitmq'
@@ -80,7 +80,7 @@ services:
 
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-6092b4aaff68aeea96a9890c1e0c949a9e0a17f9'
+    image: 'ghcr.io/diwise/context-broker:prod-9c60c887924e2fc03eeec268ce889c0094b046dd'
     restart: always
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
