@@ -41,7 +41,7 @@ services:
 
 
   iot-device-mgmt-web:
-    image: 'ghcr.io/diwise/iot-device-mgmt-web@sha256:027a0caf79ed39e0069a6208be2f50d87c1599d3c71934b95db4c67a33bacfeb'
+    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-036031601b4d02806b55cbeb8e67f44ad4f2870b'
     restart: always
     depends_on:
       - iot-device-mgmt
