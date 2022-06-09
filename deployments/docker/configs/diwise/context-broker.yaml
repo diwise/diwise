@@ -11,3 +11,9 @@ tenants:
           type: WaterQualityObserved
         - idPattern: ^urn:ngsi-ld:WeatherObserved:.+
           type: WeatherObserved
+        - idPattern: ^urn:ngsi-ld:Beach:.+
+          type: Beach
+        - idPattern: ^urn:ngsi-ld:Lifebuoy:.+
+          type: Lifebuoy
+        - idPattern: ^urn:ngsi-ld:Device:.+
+          type: Device
