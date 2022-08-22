@@ -5,7 +5,6 @@ Main repository for diwise
 ## How to run
 
 Start a composed environment using docker compose with the following command.
-*NOTE:* Older versions of docker require a hyphen between docker and compose (docker-compose).
 
 `docker compose -f deployments/docker/docker-compose.yaml up`
 
