@@ -18,7 +18,7 @@ services:
       OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
     ports:
-      - '8090:8080'
+      - '8080'
 
 
   iot-core:
@@ -34,6 +34,8 @@ services:
       OAUTH2_CLIENT_ID: 'diwise-devmgmt-api'
       OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
+    ports:
+      - '8080'
 
 
   iot-device-mgmt:
@@ -49,19 +51,20 @@ services:
       - ./configs/diwise/devices.csv:/opt/diwise/config/devices.csv
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
     ports:
-      - '8080'
+      - '8081:8080'
 
 
   iot-device-mgmt-web:
-    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-036031601b4d02806b55cbeb8e67f44ad4f2870b'
+    image: 'diwise/iot-device-mgmt-web:latest'
     restart: always
     depends_on:
       - iot-device-mgmt
     environment:
       DEVICE_MGMT_URL: http://iot-device-mgmt:8080
-      OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
+    volumes:
+      - ./configs/diwise/devmgmtweb-kc.json:/opt/app-root/src/device-management/config/keycloak.json
     ports:
-      - '8080:8080'
+      - '3000:8080'
 
 
   iot-transform-fiware:
@@ -101,7 +104,7 @@ services:
     volumes:
       - ./configs/diwise/context-broker.yaml:/opt/diwise/config/default.yaml
     ports:
-      - '8081:8080'
+      - '8181:8080'
 
 
   orion-ld:
@@ -117,7 +120,7 @@ services:
     depends_on:
       - mongodb
     ports:
-      - '8082:1026'
+      - '8182:1026'
 
 
   mongodb:
@@ -146,7 +149,7 @@ services:
     depends_on:
         - mongodb
     ports:
-      - '8083:8081'
+      - '8183:8081'
 
 
   otel-collector:
