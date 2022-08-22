@@ -1,9 +1,10 @@
 version: '3'
 services:
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-c75c19189ed0402f66ff6687a6a9acba31a48840'
+    image: 'ghcr.io/diwise/iot-agent:prod-21bfc43b8a6ba6b4efe41b40beaebe1ead742779'
     restart: always
     depends_on:
+      - keycloak
       - rabbitmq
       - iot-core
       - iot-device-mgmt
@@ -12,30 +13,41 @@ services:
       RABBITMQ_HOST: 'rabbitmq'
       DEV_MGMT_URL: 'http://iot-device-mgmt:8080'
       MSG_FWD_ENDPOINT: 'http://iot-agent:8080/api/v0/messages'
+      OAUTH2_TOKEN_URL: 'http://keycloak:8080/realms/diwise-local/protocol/openid-connect/token'
+      OAUTH2_CLIENT_ID: 'diwise-devmgmt-api'
+      OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
     ports:
       - '8090:8080'
 
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core@sha256:902f6ff24d6d7e95cba9d01a49bd67d7d8a0d4a0274ed6f5398c1764dd39df61'
+    image: 'ghcr.io/diwise/iot-core:prod-806968b116e8e53ee7093ce8af10d540432a0847'
     restart: always
     depends_on:
+      - keycloak
       - rabbitmq
     environment:
       RABBITMQ_HOST: 'rabbitmq'
       DEV_MGMT_URL: 'http://iot-device-mgmt:8080'
+      OAUTH2_TOKEN_URL: 'http://keycloak:8080/realms/diwise-local/protocol/openid-connect/token'
+      OAUTH2_CLIENT_ID: 'diwise-devmgmt-api'
+      OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
 
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-6e7a6092418bd5a62de65734d866a054c4454d69'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-2d8799e86f48c9e516a49cf64a5c8625ab340396'
     restart: always
+    depends_on:
+      - keycloak
+      - rabbitmq
     environment:
       RABBITMQ_HOST: 'rabbitmq'
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
     volumes:
       - ./configs/diwise/devices.csv:/opt/diwise/config/devices.csv
+      - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
     ports:
       - '8080'
 
@@ -53,7 +65,7 @@ services:
 
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-755ea5c86e03a50399ef81081c324c60b1deff74'
+    image: 'ghcr.io/diwise/iot-transform-fiware:prod-b64c44b982f360f6ef44134774e48fabb6bf24fa'
     restart: always
     depends_on:
       - rabbitmq
@@ -80,7 +92,7 @@ services:
 
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-9c60c887924e2fc03eeec268ce889c0094b046dd'
+    image: 'ghcr.io/diwise/context-broker:prod-3be1c881e328bee17f3de234c07e06df4ed3afcd'
     restart: always
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
@@ -162,7 +174,7 @@ services:
 
 
   grafana:
-    image: grafana/grafana:8.5.5
+    image: grafana/grafana:8.5.10
     environment:
       GF_SECURITY_ADMIN_USER: diwise
       GF_SECURITY_ADMIN_PASSWORD: diwise
@@ -173,6 +185,24 @@ services:
       - '8088:3000'
 
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:19.0
+    command:
+    - 'start-dev'
+    - '-Dkeycloak.migration.action=import'
+    - '-Dkeycloak.migration.provider=singleFile'
+    - '-Dkeycloak.migration.strategy=OVERWRITE_EXISTING'
+    - '-Dkeycloak.migration.file=/application-realm.json'
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - '8888:8080'
+    volumes:
+     - type: bind
+       source: ./configs/keycloak/realm.json
+       target: /application-realm.json
+       read_only: true
 volumes:
   rabbitmq_data:
     driver: local
