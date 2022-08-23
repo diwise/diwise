@@ -462,9 +462,7 @@
         "username": "user",
         "enabled": true,
         "emailVerified": true,
-        "requiredActions": [
-            "update-password"
-        ],
+        "requiredActions": [],
         "credentials": [
           {
             "type": "password",
@@ -770,16 +768,15 @@
         "clientId": "diwise-devmgmt-web",
         "name": "Frontend Client",
         "description": "",
-        "rootUrl": "http://127.0.0.1:3000/",
+        "rootUrl": "https://diwise.local:8443/",
         "adminUrl": "",
-        "baseUrl": "http://127.0.0.1:3000/device-management",
+        "baseUrl": "https://diwise.local:8443/device-management",
         "surrogateAuthRequired": false,
         "enabled": true,
         "alwaysDisplayInConsole": false,
         "clientAuthenticatorType": "client-secret",
         "redirectUris": [
-          "http://127.0.0.1:3000/device-management/*",
-          "http://localhost:3000/device-management/*"
+          "https://diwise.local:8443/device-management/*"
         ],
         "webOrigins": [
           "*"
@@ -798,7 +795,7 @@
           "oidc.ciba.grant.enabled": "false",
           "backchannel.logout.session.required": "false",
           "login_theme": "keycloak",
-          "post.logout.redirect.uris": "http://127.0.0.1:3000/*##http://localhost:3000/*",
+          "post.logout.redirect.uris": "https://diwise.local:8443/*",
           "oauth2.device.authorization.grant.enabled": "false",
           "display.on.consent.screen": "false",
           "backchannel.logout.revoke.offline.tokens": "false"
