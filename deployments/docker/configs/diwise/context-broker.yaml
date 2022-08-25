@@ -17,5 +17,7 @@ tenants:
           type: Lifebuoy
         - idPattern: ^urn:ngsi-ld:Device:.+
           type: Device
+        - idPattern: ^urn:ngsi-ld:ExerciseTrail:.+
+          type: ExerciseTrail
         - idPattern: ^urn:ngsi-ld:WaterConsumptionObserved:.+
           type: WaterConsumptionObserved
