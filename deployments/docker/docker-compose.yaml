@@ -1,7 +1,7 @@
 version: '3'
 services:
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-21bfc43b8a6ba6b4efe41b40beaebe1ead742779'
+    image: 'ghcr.io/diwise/iot-agent:prod-09c417702f22ae2f5efc21874844f9e788061920'
     restart: always
     depends_on:
       - keycloak
@@ -22,7 +22,7 @@ services:
 
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-806968b116e8e53ee7093ce8af10d540432a0847'
+    image: 'ghcr.io/diwise/iot-core:prod-4534c4020732c7d5fddae993edccdca7596e9982'
     restart: always
     depends_on:
       - keycloak
@@ -39,7 +39,7 @@ services:
 
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-2d8799e86f48c9e516a49cf64a5c8625ab340396'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-de28a28cb534feef4deebcbddda7f2a1e542c2a1'
     restart: always
     depends_on:
       - keycloak
@@ -68,7 +68,7 @@ services:
 
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-b64c44b982f360f6ef44134774e48fabb6bf24fa'
+    image: 'ghcr.io/diwise/iot-transform-fiware:prod-6945322449cbc116aca22ab88a6f091c592f5f6b'
     restart: always
     depends_on:
       - rabbitmq
@@ -95,7 +95,7 @@ services:
 
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-3be1c881e328bee17f3de234c07e06df4ed3afcd'
+    image: 'ghcr.io/diwise/context-broker:prod-5d59a59feb37087eae37a7e555ba00955ecb577d'
     restart: always
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
