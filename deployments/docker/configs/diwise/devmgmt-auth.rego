@@ -1,5 +1,7 @@
 package example.authz
 
+# See https://www.openpolicyagent.org/docs/latest/policy-reference/ to learn more about rego
+
 default allow := false
 
 allow {
@@ -31,10 +33,11 @@ jwks_request(url) := http.send({
 
 is_valid_token {
 
-    # We need to replace the public issuer URL that the pod can not access, with the
+    # We need to replace the public issuer URL, that the pod can not access, with the
     # internal URL that this pod CAN access without messing around with host networking.
     # This is for local testing using docker compose.
-    issuer := replace(token.payload.iss, "https://iam.diwise.local:8444/", "http://keycloak:8080/")
+    issuer := replace(token.payload.iss, "iam.diwise.local:8444", "keycloak:8080")
+    issuer = replace(issuer, "https", "http")
 
     openid_config := metadata_discovery(issuer)
     jwks := jwks_request(openid_config.jwks_uri).raw_body

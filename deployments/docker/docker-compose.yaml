@@ -1,17 +1,5 @@
 version: '3'
 services:
-  iot-device-mgmt-web:
-    image: 'diwise/iot-device-mgmt-web:latest'
-    restart: always
-    depends_on:
-      - iot-device-mgmt
-    environment:
-      DEVICE_MGMT_URL: http://iot-device-mgmt:8080
-    volumes:
-      - ./configs/diwise/devmgmtweb-kc.json:/opt/app-root/src/device-management/config/keycloak.json
-    ports:
-      - '8080'
-
 
   proxy:
     image: 'registry.access.redhat.com/ubi8/nginx-120'
@@ -20,22 +8,48 @@ services:
       - -g
       - daemon off;
     restart: always
+    depends_on:
+      context-broker:
+        condition: service_healthy
+      iot-device-mgmt-web:
+        condition: service_healthy
     volumes:
       - ./configs/proxy/nginx.conf:/etc/nginx/nginx.conf
       - ./configs/proxy/openssl/server.crt:/etc/ssl/server.crt
       - ./configs/proxy/openssl/server.key:/etc/ssl/server.key
+      - ./configs/keycloak/openssl/server.crt:/etc/ssl/kc-server.crt
+      - ./configs/proxy/openssl/server.key:/etc/ssl/kc-server.key
     ports:
       - '8443:443'
+      - '8444:444'
+
+
+  iot-device-mgmt-web:
+    image: 'diwise/iot-device-mgmt-web:latest'
+    restart: always
+    depends_on:
+      iot-device-mgmt:
+        condition: service_healthy
+    environment:
+      DEVICE_MGMT_URL: http://iot-device-mgmt:8080
+    volumes:
+      - ./configs/diwise/devmgmtweb-kc.json:/opt/app-root/src/device-management/config/keycloak.json
+    ports:
+      - '8080'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
 
 
   iot-agent:
     image: 'ghcr.io/diwise/iot-agent:prod-09c417702f22ae2f5efc21874844f9e788061920'
     restart: always
     depends_on:
-      - keycloak
-      - rabbitmq
-      - iot-core
-      - iot-device-mgmt
+      iot-device-mgmt:
+        condition: service_healthy
     environment:
       MQTT_DISABLED: 'true'
       RABBITMQ_HOST: 'rabbitmq'
@@ -53,8 +67,8 @@ services:
     image: 'ghcr.io/diwise/iot-core:prod-4534c4020732c7d5fddae993edccdca7596e9982'
     restart: always
     depends_on:
-      - keycloak
-      - rabbitmq
+      iot-device-mgmt:
+        condition: service_healthy
     environment:
       RABBITMQ_HOST: 'rabbitmq'
       DEV_MGMT_URL: 'http://iot-device-mgmt:8080'
@@ -70,8 +84,10 @@ services:
     image: 'ghcr.io/diwise/iot-device-mgmt:prod-de28a28cb534feef4deebcbddda7f2a1e542c2a1'
     restart: always
     depends_on:
-      - keycloak
-      - rabbitmq
+      keycloak:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       RABBITMQ_HOST: 'rabbitmq'
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
@@ -80,14 +96,22 @@ services:
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
     ports:
       - '8080'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
 
   iot-transform-fiware:
     image: 'ghcr.io/diwise/iot-transform-fiware:prod-6945322449cbc116aca22ab88a6f091c592f5f6b'
     restart: always
     depends_on:
-      - rabbitmq
-      - context-broker
+      rabbitmq:
+        condition: service_healthy
+      context-broker:
+        condition: service_healthy
     environment:
       NGSI_CB_URL: 'http://context-broker:8080'
       RABBITMQ_HOST: 'rabbitmq'
@@ -107,7 +131,12 @@ services:
       - '15672'
     volumes:
       - 'rabbitmq_data:/bitnami'
-
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
 
   context-broker:
     image: 'ghcr.io/diwise/context-broker:prod-5d59a59feb37087eae37a7e555ba00955ecb577d'
@@ -115,11 +144,20 @@ services:
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
     depends_on:
-      - orion-ld
+      keycloak:
+        condition: service_healthy
+      orion-ld:
+        condition: service_healthy
     volumes:
       - ./configs/diwise/context-broker.yaml:/opt/diwise/config/default.yaml
     ports:
       - '8181:8080'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 10
+      start_period: 2s
 
 
   orion-ld:
@@ -133,9 +171,16 @@ services:
       ORIONLD_TROE:	'FALSE'
       ORIONLD_DISABLE_FILE_LOG: 'TRUE'
     depends_on:
-      - mongodb
+        mongodb:
+          condition: service_started
     ports:
       - '8182:1026'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1026/ngsi-ld/v1/types"]
+      interval: 10s
+      timeout: 2s
+      retries: 10
+      start_period: 2s
 
 
   mongodb:
@@ -162,7 +207,8 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: 'password'
       ME_CONFIG_BASICAUTH_USERNAME: ''
     depends_on:
-        - mongodb
+        orion-ld:
+          condition: service_healthy
     ports:
       - '8183:8081'
 
@@ -209,8 +255,8 @@ services:
     - 'start-dev'
     - '--hostname=iam.diwise.local'
     - '--hostname-port=8444'
-    - '--https-certificate-file=/server.pem'
-    - '--https-certificate-key-file=/server.key'
+    - '--proxy=edge'
+    - '--health-enabled=true'
     - '-Dkeycloak.migration.action=import'
     - '-Dkeycloak.migration.provider=singleFile'
     - '-Dkeycloak.migration.strategy=OVERWRITE_EXISTING'
@@ -219,11 +265,16 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
-      - '8444:8443'
+      - '8080'
     volumes:
      - ./configs/keycloak/realm.json:/application-realm.json
-     - ./configs/keycloak/openssl/server.pem:/server.pem
-     - ./configs/proxy/openssl/server.key:/server.key
+    healthcheck:
+      test: ["CMD", "curl", "-f", "--insecure", "http://localhost:8080/health/ready"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
 volumes:
   rabbitmq_data:
     driver: local

@@ -14,7 +14,7 @@ Start a composed environment using docker compose with the following command.
 
 The services will start, but with MQTT disabled. How to change the configuration to start consuming data over MQTT is currently left as an exercise for the reader.
 
-Data packets can be ingested using curl or another tool of your choice by posting data to http://127.0.0.1:8090/api/v0/messages. More documentation about how this can be used will be added soon.
+Data packets can be ingested using curl or another tool of your choice by posting data to https://diwise.local:8443/api/v0/messages.
 
 To cleanup your environment after testing, run
 
