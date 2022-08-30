@@ -151,7 +151,7 @@ services:
     volumes:
       - ./configs/diwise/context-broker.yaml:/opt/diwise/config/default.yaml
     ports:
-      - '8181:8080'
+      - '8080'
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 10s
@@ -174,7 +174,7 @@ services:
         mongodb:
           condition: service_started
     ports:
-      - '8182:1026'
+      - '1026'
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:1026/ngsi-ld/v1/types"]
       interval: 10s
@@ -240,13 +240,16 @@ services:
   grafana:
     image: grafana/grafana:8.5.10
     environment:
+      GF_SERVER_DOMAIN: diwise.local
+      GF_SERVER_ROOT_URL: https://diwise.local:8443/grafana/
+      GF_SERVER_SERVER_FROM_SUBPATH: "true"
       GF_SECURITY_ADMIN_USER: diwise
       GF_SECURITY_ADMIN_PASSWORD: diwise
     volumes:
       - ./configs/grafana/datasources:/etc/grafana/provisioning/datasources
       - grafana-data:/var/lib/grafana
     ports:
-      - '8088:3000'
+      - '3000'
 
 
   keycloak:
