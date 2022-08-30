@@ -38,10 +38,9 @@ services:
       - '8080'
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
+      interval: 3s
+      timeout: 2s
+      retries: 10
 
 
   iot-agent:
@@ -239,7 +238,7 @@ services:
 
   grafana:
     image: grafana/grafana:8.5.10
-    command: [ '--config', '/usr/share/grafana/custom.ini']
+    command: [ '--config', '/usr/share/grafana/custom.ini' ]
     environment:
       GF_SERVER_DOMAIN: diwise.local
       GF_SERVER_ROOT_URL: https://diwise.local:8443/grafana/
