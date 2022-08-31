@@ -278,7 +278,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 24
       start_period: 10s
 
 volumes:
