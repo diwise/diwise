@@ -237,7 +237,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: ghcr.io/diwise/context-broker@sha256:d4950963c5b4d9b493671591b6d093740ae120d914daa2038c10845b397a9664
+        image: ghcr.io/diwise/context-broker@sha256:836e0b4dbe4b330138cd7a75ebb4441f244f1e01d5501ed53ea0b162f949b7ba
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -323,7 +323,7 @@ spec:
           value: http://iot-agent/api/v0/messages
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-agent@sha256:a4b5124a81fe2c72a885a2ef8375cc4c0406b227ea395db2fafe240b898b10ea
+        image: ghcr.io/diwise/iot-agent@sha256:73341768bf217cbd1ff227d200badc69f638e38914029561f324ddda868c165e
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -379,7 +379,7 @@ spec:
           value: http://iot-device-mgmt
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-core@sha256:902f6ff24d6d7e95cba9d01a49bd67d7d8a0d4a0274ed6f5398c1764dd39df61
+        image: ghcr.io/diwise/iot-core@sha256:b56583ef90f0b1a7b06bfcdbd3c778ee6a8932049990a4ec43e3dd726901c6f2
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -429,7 +429,7 @@ spec:
       - env:
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-device-mgmt@sha256:0e502762c68c2619c9f35c41da3baf4487738fb4e1c3f2d9fdde1bc65a0d5861
+        image: ghcr.io/diwise/iot-device-mgmt@sha256:b80a2b02b444a13d27b0f2904b2af735c71b6b60fa0a86e41261c48480c3f286
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -484,7 +484,10 @@ spec:
         app.kubernetes.io/name: iot-device-mgmt-web
     spec:
       containers:
-      - image: ghcr.io/diwise/iot-device-mgmt-web@sha256:027a0caf79ed39e0069a6208be2f50d87c1599d3c71934b95db4c67a33bacfeb
+      - env:
+        - name: DEVICE_MGMT_URL
+          value: http://iot-device-mgmt
+        image: ghcr.io/diwise/iot-device-mgmt-web@sha256:07401e63670e86edc9f84aa24aea9c5a38737aa5641d1bc17afc285123d37b65
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -540,7 +543,7 @@ spec:
           value: http://context-broker
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-transform-fiware@sha256:97acb9e9f200269bd9aff2f3c9c9e1477377edad94ce767489ec970c5a861283
+        image: ghcr.io/diwise/iot-transform-fiware@sha256:294fb401f0620b0741a8a0334922351f183c362462dcef80cffdd107cf1e712e
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -721,6 +724,7 @@ spec:
         - -fg
         - -multiservice
         - -ngsiv1Autocast
+        - -experimental
         - -logLevel
         - DEBUG
         env:
@@ -738,7 +742,7 @@ spec:
           value: "FALSE"
         - name: ORIONLD_DISABLE_FILE_LOG
           value: "TRUE"
-        image: quay.io/fiware/orion-ld@sha256:ea838e5b405170b6d42af9035a30454a21870f7f3738db73da27585bf6a478b3
+        image: quay.io/fiware/orion-ld@sha256:98f4c6e52e834c04910194fe00715064e4f6a78e4231a0813824b282376a338d
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
