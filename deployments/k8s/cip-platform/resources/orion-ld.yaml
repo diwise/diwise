@@ -65,7 +65,8 @@ spec:
         - name: ORIONLD_DISABLE_FILE_LOG
           value: 'TRUE'
         command: ["orionld", "-fg", "-multiservice", "-ngsiv1Autocast", "-experimental", "-logLevel", "DEBUG"]
-        image: quay.io/fiware/orion-ld@sha256:98f4c6e52e834c04910194fe00715064e4f6a78e4231a0813824b282376a338d
+        #image: quay.io/fiware/orion-ld@sha256:98f4c6e52e834c04910194fe00715064e4f6a78e4231a0813824b282376a338d
+        image: quay.io/fiware/orion-ld@sha256:ea838e5b405170b6d42af9035a30454a21870f7f3738db73da27585bf6a478b3
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
