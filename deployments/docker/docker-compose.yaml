@@ -252,7 +252,7 @@ services:
 
 
   grafana:
-    image: grafana/grafana:8.5.11
+    image: grafana/grafana:9.1.5
     command: [ '--config', '/usr/share/grafana/custom.ini' ]
     environment:
       GF_SERVER_DOMAIN: diwise.local
