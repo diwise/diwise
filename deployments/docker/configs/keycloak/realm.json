@@ -463,6 +463,9 @@
         "enabled": true,
         "emailVerified": true,
         "requiredActions": [],
+        "attributes": {
+          "tenants": "default"
+        },
         "credentials": [
           {
             "type": "password",
@@ -747,6 +750,22 @@
               "claim.name": "clientAddress",
               "jsonType.label": "String"
             }
+          },
+          {
+            "id": "bfd1b893-221c-47b9-a669-a6f52322f9a0",
+            "name": "allowed-tenants",
+            "protocol": "openid-connect",
+            "protocolMapper": "oidc-hardcoded-claim-mapper",
+            "consentRequired": false,
+            "config": {
+              "claim.value": "[\"default\"]",
+              "userinfo.token.claim": "true",
+              "id.token.claim": "true",
+              "access.token.claim": "true",
+              "claim.name": "tenants",
+              "jsonType.label": "JSON",
+              "access.tokenResponse.claim": "false"
+            }
           }
         ],
         "defaultClientScopes": [
@@ -803,6 +822,24 @@
         "authenticationFlowBindingOverrides": {},
         "fullScopeAllowed": true,
         "nodeReRegistrationTimeout": -1,
+        "protocolMappers": [
+          {
+            "id": "8fc509e8-075a-4dbd-b81c-053106b2ee0f",
+            "name": "user-tenants",
+            "protocol": "openid-connect",
+            "protocolMapper": "oidc-usermodel-attribute-mapper",
+            "consentRequired": false,
+            "config": {
+              "aggregate.attrs": "false",
+              "multivalued": "true",
+              "userinfo.token.claim": "true",
+              "user.attribute": "tenants",
+              "id.token.claim": "true",
+              "access.token.claim": "true",
+              "claim.name": "tenants"
+            }
+          }
+        ],
         "defaultClientScopes": [
           "web-origins",
           "acr",
