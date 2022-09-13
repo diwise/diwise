@@ -44,7 +44,7 @@ services:
 
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-053dcb26c978a50f7ccb95d5494632269e3ab30a'
+    image: 'ghcr.io/diwise/iot-agent:prod-d1009051a8bf6be85a109a2756a06adfaaaaa549'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -80,7 +80,7 @@ services:
 
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-c2f045c8829f976935a254664ab8e1f2e58488d1'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-62bd1317301a1d8b654f118733d27aeaf088ffb1'
     restart: always
     depends_on:
       keycloak:
@@ -99,7 +99,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 5s
       timeout: 5s
-      retries: 3
+      retries: 30
       start_period: 10s
 
 
@@ -163,7 +163,7 @@ services:
   orion-ld:
     image: 'quay.io/fiware/orion-ld@sha256:98f4c6e52e834c04910194fe00715064e4f6a78e4231a0813824b282376a338d'
     restart: always
-    command: [ '-experimental']
+    command: [ '-experimental', '-logLevel', 'DEBUG']
     environment:
       ORIONLD_MONGO_HOST: 'mongodb'
       ORIONLD_MONGO_USER: 'admin'
@@ -215,7 +215,7 @@ services:
 
 
   otel-collector:
-    image: 'otel/opentelemetry-collector:0.52.0'
+    image: 'otel/opentelemetry-collector:0.59.0'
     command: '--config /etc/otel-config.yaml'
     volumes:
      - ./configs/opentelemetry/otel-config.yaml:/etc/otel-config.yaml
@@ -238,8 +238,21 @@ services:
       - '9411'   # zipkin
 
 
+#  loki:
+#    image: grafana/loki:2.6.1
+#    ports:
+#      - '3100'
+#    command: -config.file=/etc/loki/local-config.yaml
+
+#  promtail:
+#    image: grafana/promtail:2.6.1
+#    volumes:
+#      - /var/log:/var/log
+#    command: -config.file=/etc/promtail/config.yml
+
+
   grafana:
-    image: grafana/grafana:8.5.10
+    image: grafana/grafana:8.5.11
     command: [ '--config', '/usr/share/grafana/custom.ini' ]
     environment:
       GF_SERVER_DOMAIN: diwise.local
