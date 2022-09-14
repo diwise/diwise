@@ -40,10 +40,11 @@ is_valid_token {
     # We need to replace the public issuer URL, that the pod can not access, with the
     # internal URL that this pod CAN access without messing around with host networking.
     # This is for local testing using docker compose.
-    issuer := replace(token.payload.iss, "iam.diwise.local:8444", "keycloak:8080")
-    issuer = replace(issuer, "https", "http")
 
-    openid_config := metadata_discovery(issuer)
+    issuer := replace(token.payload.iss, "iam.diwise.local:8444", "keycloak:8080")
+    http_issuer := replace(issuer, "https", "http")
+
+    openid_config := metadata_discovery(http_issuer)
     jwks := jwks_request(openid_config.jwks_uri).raw_body
 	
     verified := io.jwt.verify_rs256(input.token, jwks)
