@@ -12,13 +12,35 @@ Start a composed environment using docker compose with the following command.
 
 `docker compose -f deployments/docker/docker-compose.yaml up`
 
-The services will start, but with MQTT disabled. How to change the configuration to start consuming data over MQTT is currently left as an exercise for the reader.
-
 Data packets can be ingested using curl or another tool of your choice by posting data to https://diwise.local:8443/api/v0/messages.
 
 To cleanup your environment after testing, run
 
 `docker compose -f deployments/docker/docker-compose.yaml down -v --remove-orphans`
+
+#### Configuration
+
+On docker compose up, the services will start with MQTT disabled. The recommended way to add configuration parameters is to create a docker-compose.override.yaml file containing user or project specific settings/secrets that should not be pushed to the repo. For extra protection, this file name is added to the [.gitignore](.gitignore) file to reduce the likelihood that settings are pushed to GitHub.
+
+An example configuration looks like this:
+
+```
+version: '3'
+services:
+
+  iot-agent:
+    environment:
+      MQTT_DISABLED: 'false'
+      MQTT_HOST: 'your.mqtt.server'
+      MQTT_USER: '<mqtt-user>'
+      MQTT_PASSWORD: '<mqtt-password>'
+      MQTT_TOPIC_0: '<mqtt-topic>'
+
+```
+
+And is merged with the default configuration by adding a -f argument to compose like so:
+
+`docker compose -f deployments/docker/docker-compose.yaml -f deployments/docker/docker-compose.override.yaml up`
 
 #### Preparations
 
