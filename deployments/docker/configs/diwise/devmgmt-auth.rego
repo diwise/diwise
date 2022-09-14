@@ -4,12 +4,16 @@ package example.authz
 
 default allow := false
 
-allow {
+allow = response {
     is_valid_token
 
     input.method == "GET"
     pathstart := array.slice(input.path, 0, 3)
     pathstart == ["api", "v0", "devices"]
+
+    response := {
+        "tenants": token.payload.tenants
+    }
 }
 
 issuers := {"http://keycloak:8080/realms/diwise-local"}
@@ -47,5 +51,5 @@ is_valid_token {
 }
 
 token := {"payload": payload} {
-    [header, payload, signature] := io.jwt.decode(input.token)
+    [_, payload, _] := io.jwt.decode(input.token)
 }

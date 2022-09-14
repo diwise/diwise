@@ -80,7 +80,7 @@ services:
 
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-62bd1317301a1d8b654f118733d27aeaf088ffb1'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-9c9f5d1864845fde51a8b95513d638edfd346d47'
     restart: always
     depends_on:
       keycloak:
@@ -242,7 +242,7 @@ services:
 #    image: grafana/loki:2.6.1
 #    ports:
 #      - '3100'
-#    command: -config.file=/etc/loki/local-config.yaml
+#    command: [ '-config.file=/etc/loki/local-config.yaml' ]
 
 #  promtail:
 #    image: grafana/promtail:2.6.1
