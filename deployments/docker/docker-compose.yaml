@@ -25,13 +25,12 @@ services:
 
 
   iot-device-mgmt-web:
-    image: 'diwise/iot-device-mgmt-web:latest'
+    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-2f3f14b9b0df11a73494800a8200e3226ca9ff81'
+    #image: 'diwise/iot-device-mgmt-web:latest'
     restart: always
     depends_on:
       iot-device-mgmt:
         condition: service_healthy
-    environment:
-      DEVICE_MGMT_URL: http://iot-device-mgmt:8080
     volumes:
       - ./configs/diwise/devmgmtweb-kc.json:/opt/app-root/src/device-management/config/keycloak.json
     ports:
@@ -244,8 +243,8 @@ services:
 #      - '3100'
 #    command: [ '-config.file=/etc/loki/local-config.yaml' ]
 
-#  promtail:
-#    image: grafana/promtail:2.6.1
+#  fluentbit:
+#    image: fluent/fluent-bit:1.9.8
 #    volumes:
 #      - /var/log:/var/log
 #    command: -config.file=/etc/promtail/config.yml
