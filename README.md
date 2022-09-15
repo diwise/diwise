@@ -59,6 +59,15 @@ Then invoke the following command to allow the mappings to take effect:
 sudo killall -HUP mDNSResponder
 ```
 
+Windows:
+
+Edit your C:\Windows\System32\drivers\etc\hosts file to include the two lines:
+
+```
+127.0.0.1 diwise.local
+127.0.0.1 iam.diwise.local
+```
+
 ### Code Ready Containers
 
 **TODO**
