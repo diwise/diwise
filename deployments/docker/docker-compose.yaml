@@ -26,7 +26,6 @@ services:
 
   iot-device-mgmt-web:
     image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-2f3f14b9b0df11a73494800a8200e3226ca9ff81'
-    #image: 'diwise/iot-device-mgmt-web:latest'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -46,6 +45,8 @@ services:
     image: 'ghcr.io/diwise/iot-agent:prod-d1009051a8bf6be85a109a2756a06adfaaaaa549'
     restart: always
     depends_on:
+      fluentbit:
+        condition: service_healthy
       iot-device-mgmt:
         condition: service_healthy
     environment:
@@ -57,6 +58,13 @@ services:
       OAUTH2_CLIENT_ID: 'diwise-devmgmt-api'
       OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
+    logging:
+      driver: fluentd
+      options:
+#        fluentd-address: fluentbit:24224
+        fluentd-async: 'true'
+    links:
+      - fluentbit
     ports:
       - '8080'
 
@@ -65,6 +73,8 @@ services:
     image: 'ghcr.io/diwise/iot-core:prod-bb75768c697a6217a9de5488d370f27cc8e5ea66'
     restart: always
     depends_on:
+      fluentbit:
+        condition: service_healthy
       iot-device-mgmt:
         condition: service_healthy
     environment:
@@ -74,6 +84,13 @@ services:
       OAUTH2_CLIENT_ID: 'diwise-devmgmt-api'
       OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
+    logging:
+      driver: fluentd
+      options:
+#        fluentd-address: fluentbit:24224
+        fluentd-async: 'true'
+    links:
+      - fluentbit
     ports:
       - '8080'
 
@@ -82,6 +99,8 @@ services:
     image: 'ghcr.io/diwise/iot-device-mgmt:prod-9c9f5d1864845fde51a8b95513d638edfd346d47'
     restart: always
     depends_on:
+      fluentbit:
+        condition: service_healthy
       keycloak:
         condition: service_healthy
       rabbitmq:
@@ -92,6 +111,13 @@ services:
     volumes:
       - ./configs/diwise/devices.csv:/opt/diwise/config/devices.csv
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
+    logging:
+      driver: fluentd
+      options:
+#        fluentd-address: fluentbit:24224
+        fluentd-async: 'true'
+    links:
+      - fluentbit
     ports:
       - '8080'
     healthcheck:
@@ -106,6 +132,8 @@ services:
     image: 'ghcr.io/diwise/iot-transform-fiware:prod-10e0a7e7c6417cb29019fb76e579b48c489402d4'
     restart: always
     depends_on:
+      fluentbit:
+        condition: service_healthy
       rabbitmq:
         condition: service_healthy
       context-broker:
@@ -114,6 +142,13 @@ services:
       NGSI_CB_URL: 'http://context-broker:8080'
       RABBITMQ_HOST: 'rabbitmq'
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
+    logging:
+      driver: fluentd
+      options:
+#        fluentd-address: fluentbit:24224
+        fluentd-async: 'true'
+    links:
+      - fluentbit
 
 
   rabbitmq:
@@ -133,7 +168,7 @@ services:
       test: rabbitmq-diagnostics -q ping
       interval: 2s
       timeout: 2s
-      retries: 15
+      retries: 60
       start_period: 20s
 
   context-broker:
@@ -143,12 +178,21 @@ services:
       CONTEXT_BROKER_CLIENT_DEBUG: 'true'
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
     depends_on:
+      fluentbit:
+        condition: service_healthy
       keycloak:
         condition: service_healthy
       orion-ld:
         condition: service_healthy
     volumes:
       - ./configs/diwise/context-broker.yaml:/opt/diwise/config/default.yaml
+    logging:
+      driver: fluentd
+      options:
+#        fluentd-address: fluentbit:24224
+        fluentd-async: 'true'
+    links:
+      - fluentbit
     ports:
       - '8080'
     healthcheck:
@@ -237,17 +281,38 @@ services:
       - '9411'   # zipkin
 
 
-#  loki:
-#    image: grafana/loki:2.6.1
-#    ports:
-#      - '3100'
-#    command: [ '-config.file=/etc/loki/local-config.yaml' ]
+  loki:
+    image: grafana/loki:2.6.1
+    ports:
+      - '3100'
+    command: [ '-config.file=/etc/loki/local-config.yaml' ]
+    healthcheck:
+      test: wget -q --tries=1 -O- http://127.0.0.1:3100/ready|grep -q "ready"
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
-#  fluentbit:
-#    image: fluent/fluent-bit:1.9.8
-#    volumes:
-#      - /var/log:/var/log
-#    command: -config.file=/etc/promtail/config.yml
+
+  # We will be setting up fluent-bit as a docker logging driver to collect log output from the other containers and forward it to loki
+  # See https://kevcodez.de/posts/2019-08-10-fluent-bit-docker-logging-driver-elasticsearch/
+  fluentbit:
+    image: bitnami/fluent-bit:1.9.8
+    restart: always
+    depends_on:
+      loki:
+        condition: service_healthy
+    volumes:
+      - ./configs/diwise/fluent-bit/fluent-bit.conf:/opt/bitnami/fluent-bit/conf/fluent-bit.conf
+    ports:
+      - '2020:2020'
+      - '24224:24224'
+      - '24224:24224/udp'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:2020/api/v1/health"]
+      interval: 2s
+      timeout: 5s
+      retries: 24
+      start_period: 10s
 
 
   grafana:
@@ -290,7 +355,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
       interval: 5s
       timeout: 5s
-      retries: 24
+      retries: 36
       start_period: 10s
 
 volumes:

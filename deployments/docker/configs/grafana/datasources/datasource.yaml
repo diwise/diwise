@@ -9,3 +9,16 @@ datasources:
       httpMethod: GET
       nodeGraph:
         enabled: true
+ #     serviceMap:
+ #       datasourceUid: 'prometheus'        
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    jsonData:
+      derivedFields:
+      - datasourceName: Tempo
+        datasourceUid: tempo
+        matcherRegex: '"traceID":\s?"(\w+)'
+        name: TraceID
+        url: $${__value.raw}
