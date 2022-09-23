@@ -42,7 +42,7 @@ services:
 
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-d1009051a8bf6be85a109a2756a06adfaaaaa549'
+    image: 'ghcr.io/diwise/iot-agent:prod-3e04d119a47c88c6efd6b96afde1569cdaa28936'
     restart: always
     depends_on:
       fluentbit:
@@ -70,7 +70,7 @@ services:
 
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-bb75768c697a6217a9de5488d370f27cc8e5ea66'
+    image: 'ghcr.io/diwise/iot-core:prod-7fc6eca36690a232e99ca67cafd052ccaa9f285a'
     restart: always
     depends_on:
       fluentbit:
@@ -96,7 +96,7 @@ services:
 
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-582e8f37c51f044c9faa89cf2d6bd6a1c2bec313'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-f238929115cc88d9d284529bf79dcfdd8ca92001'
     restart: always
     depends_on:
       fluentbit:
@@ -129,7 +129,7 @@ services:
 
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-10e0a7e7c6417cb29019fb76e579b48c489402d4'
+    image: 'ghcr.io/diwise/iot-transform-fiware:prod-99f0122f5e6a99f755aad22daced7ebc5b7bb827'
     restart: always
     depends_on:
       fluentbit:
@@ -172,7 +172,7 @@ services:
       start_period: 20s
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-f90c729132c6acb51233b98b96514a56a768d27a'
+    image: 'ghcr.io/diwise/context-broker:prod-961f00705fad67094c6c1853fd930be570736fa5'
     restart: always
     environment:
       CONTEXT_BROKER_CLIENT_DEBUG: 'true'
@@ -316,7 +316,7 @@ services:
 
 
   grafana:
-    image: grafana/grafana:9.1.5
+    image: grafana/grafana:9.1.6
     command: [ '--config', '/usr/share/grafana/custom.ini' ]
     environment:
       GF_SERVER_DOMAIN: diwise.local
