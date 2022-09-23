@@ -25,7 +25,7 @@ services:
 
 
   iot-device-mgmt-web:
-    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-2f3f14b9b0df11a73494800a8200e3226ca9ff81'
+    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-806c84aea7c4c47608b872286de2db9ca3eb18ce'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -96,7 +96,7 @@ services:
 
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-9c9f5d1864845fde51a8b95513d638edfd346d47'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-582e8f37c51f044c9faa89cf2d6bd6a1c2bec313'
     restart: always
     depends_on:
       fluentbit:
