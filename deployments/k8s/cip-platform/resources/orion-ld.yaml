@@ -57,9 +57,15 @@ spec:
         - name: ORIONLD_MONGO_HOST
           value: mongodb
         - name: ORIONLD_MONGO_USER
-          value: admin
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: authn-mongodb
         - name: ORIONLD_MONGO_PASSWORD
-          value: password
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: authn-mongodb
         - name: ORIONLD_TROE
           value: 'FALSE'
         - name: ORIONLD_DISABLE_FILE_LOG

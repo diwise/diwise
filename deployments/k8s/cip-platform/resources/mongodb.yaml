@@ -73,9 +73,15 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         - name: MONGO_INITDB_ROOT_USERNAME
-          value: admin
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: authn-mongodb
         - name: MONGO_INITDB_ROOT_PASSWORD
-          value: password
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: authn-mongodb
         image: mongo:5
         imagePullPolicy: IfNotPresent
         livenessProbe:
