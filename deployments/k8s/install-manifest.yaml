@@ -379,7 +379,7 @@ spec:
           value: http://iot-device-mgmt
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-core@sha256:98f87e4607254434d4ddc75eb4475f8b48b2327914cdcadda986ccc18efbf402
+        image: ghcr.io/diwise/iot-core@sha256:eb02997e3a18a76fc8fafcd057d37191219ea485acbcf6e5f221cc475e9b0593
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -429,7 +429,7 @@ spec:
       - env:
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-device-mgmt@sha256:2572c6200ee5729bf01bf2edf7fa58a94a8e6c9ac154c0939aab1eb137a9c3c7
+        image: ghcr.io/diwise/iot-device-mgmt@sha256:ab22769deff5eeeba25a7e1efc2a0d90590ff765122fa8ea8f619d8e654552e6
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -487,7 +487,7 @@ spec:
       - env:
         - name: DEVICE_MGMT_URL
           value: http://iot-device-mgmt
-        image: ghcr.io/diwise/iot-device-mgmt-web@sha256:af0a6cdf5c861664d88e4235b5dae792b28f85d344c16030b16c61448e234b7c
+        image: ghcr.io/diwise/iot-device-mgmt-web@sha256:2a8499c9008ce6bed73a93978808b7bf4ca29006879dad28324e136ba91ce4a9
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -662,9 +662,15 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         - name: MONGO_INITDB_ROOT_USERNAME
-          value: admin
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: authn-mongodb
         - name: MONGO_INITDB_ROOT_PASSWORD
-          value: password
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: authn-mongodb
         image: mongo:5
         imagePullPolicy: IfNotPresent
         livenessProbe:
@@ -735,9 +741,15 @@ spec:
         - name: ORIONLD_MONGO_HOST
           value: mongodb
         - name: ORIONLD_MONGO_USER
-          value: admin
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: authn-mongodb
         - name: ORIONLD_MONGO_PASSWORD
-          value: password
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: authn-mongodb
         - name: ORIONLD_TROE
           value: "FALSE"
         - name: ORIONLD_DISABLE_FILE_LOG
