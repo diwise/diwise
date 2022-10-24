@@ -323,7 +323,7 @@ spec:
           value: http://iot-agent/api/v0/messages
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-agent@sha256:58da28d033e460f2b0d79e76715928796ab32323b9c52d6f1bd1ae4e6e013faa
+        image: ghcr.io/diwise/iot-agent@sha256:2ecb68f1dd5043b032c8a54b7f574af2dd6749d7a2b8317337c9c171d7c2a552
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -429,7 +429,7 @@ spec:
       - env:
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-device-mgmt@sha256:ab22769deff5eeeba25a7e1efc2a0d90590ff765122fa8ea8f619d8e654552e6
+        image: ghcr.io/diwise/iot-device-mgmt@sha256:ca49c77ef39e2c61e1b209d8410a3b63dc3c08e13e3026fc92101fb448fe1112
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -484,10 +484,7 @@ spec:
         app.kubernetes.io/name: iot-device-mgmt-web
     spec:
       containers:
-      - env:
-        - name: DEVICE_MGMT_URL
-          value: http://iot-device-mgmt
-        image: ghcr.io/diwise/iot-device-mgmt-web@sha256:2a8499c9008ce6bed73a93978808b7bf4ca29006879dad28324e136ba91ce4a9
+      - image: ghcr.io/diwise/iot-device-mgmt-web@sha256:4247ff44c4fd48e5bea5d6a3a1a7ca23c8b1444495d0def2917939cc3e267495
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -509,7 +506,14 @@ spec:
           httpGet:
             path: /health
             port: default-port
+        volumeMounts:
+        - mountPath: /opt/app-root/src/device-management/config
+          name: config-volume
       serviceAccountName: iot-device-mgmt-web
+      volumes:
+      - configMap:
+          name: devmgmt-web-config
+        name: config-volume
 ---
 apiVersion: apps/v1
 kind: Deployment
