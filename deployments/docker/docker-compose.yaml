@@ -25,7 +25,7 @@ services:
 
 
   iot-device-mgmt-web:
-    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-48588bc720d70fee80b1b36c3da4f10f2ae0dcd7'
+    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-375e920c03c78cc487452ea0ed411865d13f88df'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -42,7 +42,7 @@ services:
 
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-a5e20bf7730cec64a63f983e384a379ae121c244'
+    image: 'ghcr.io/diwise/iot-agent:prod-fd759c8552a0be1c2900513a0707c263ddfa33db'
     restart: always
     depends_on:
       fluentbit:
@@ -58,6 +58,7 @@ services:
       OAUTH2_CLIENT_ID: 'diwise-devmgmt-api'
       OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
+      APPSERVER_FACADE: 'chirpstack'
     logging:
       driver: fluentd
       options:
@@ -70,7 +71,7 @@ services:
 
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-a94a65f392334194e5120b3c3f630c4d61e23696'
+    image: 'ghcr.io/diwise/iot-core:prod-84b823d9f1e1750922ab1dca9cc4863ff4c075a1'
     restart: always
     depends_on:
       fluentbit:
@@ -96,7 +97,7 @@ services:
 
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-0f59483afb455c50940c548b23f095f9791a161b'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-6ee0a5a45973d96b72aa9ff0c1b550d10b5f7b73'
     restart: always
     depends_on:
       fluentbit:
@@ -129,7 +130,7 @@ services:
 
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-99f0122f5e6a99f755aad22daced7ebc5b7bb827'
+    image: 'ghcr.io/diwise/iot-transform-fiware:prod-814f9a5f56bceb174d6228f9c11c5a6f8626314a'
     restart: always
     depends_on:
       fluentbit:
@@ -172,7 +173,7 @@ services:
       start_period: 20s
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-961f00705fad67094c6c1853fd930be570736fa5'
+    image: 'ghcr.io/diwise/context-broker:prod-e620234b345f6bbce679e53a91ae26b9b9e4c59b'
     restart: always
     environment:
       CONTEXT_BROKER_CLIENT_DEBUG: 'true'
