@@ -25,7 +25,7 @@ services:
 
 
   iot-device-mgmt-web:
-    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-375e920c03c78cc487452ea0ed411865d13f88df'
+    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-f871f33b982a12ea95e9ffcc4fa910d33c1e5991'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -42,7 +42,7 @@ services:
 
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-fd759c8552a0be1c2900513a0707c263ddfa33db'
+    image: 'ghcr.io/diwise/iot-agent:prod-06c8fa3b4b117e4c2887b23ecf45696e3424f83b'
     restart: always
     depends_on:
       fluentbit:
@@ -71,7 +71,7 @@ services:
 
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-84b823d9f1e1750922ab1dca9cc4863ff4c075a1'
+    image: 'ghcr.io/diwise/iot-core:prod-85653e8b214c6beb73b263d5d93f1f4186906f45'
     restart: always
     depends_on:
       fluentbit:
@@ -97,7 +97,7 @@ services:
 
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-6ee0a5a45973d96b72aa9ff0c1b550d10b5f7b73'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-4920eac457a7bad30263ade3f0f0e6c002717d07'
     restart: always
     depends_on:
       fluentbit:
@@ -130,7 +130,7 @@ services:
 
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-814f9a5f56bceb174d6228f9c11c5a6f8626314a'
+    image: 'ghcr.io/diwise/iot-transform-fiware:prod-49d7ae2eed6ecd3b28219d242027e8bf4a811c59'
     restart: always
     depends_on:
       fluentbit:
