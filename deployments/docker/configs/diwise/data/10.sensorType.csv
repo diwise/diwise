@@ -1,0 +1,11 @@
+name;description;interval
+qalcosonic;;3600
+qalcosonic_w1h;;3600
+qalcosonic_w1t;;3600
+qalcosonic_w1e;;3600
+presence;;3600
+elsys_codec;;3600
+enviot;;3600
+tem_lab_14ns;;3600
+strips_lora_ms_h;;3600
+cube02;;3600

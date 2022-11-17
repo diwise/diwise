@@ -87,7 +87,7 @@ services:
     environment:
       RABBITMQ_HOST: 'rabbitmq'
     volumes:
-      - ./configs/diwise/devices.csv:/opt/diwise/config/devices.csv
+      - ./configs/diwise/data:/opt/diwise/config/data
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
     ports:
       - '8080'
