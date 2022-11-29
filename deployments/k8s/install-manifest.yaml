@@ -237,7 +237,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: ghcr.io/diwise/context-broker@sha256:2f3e33a3fd1adbd4058b9c19128b314655e5417b00b8ed920a88547bd7ba67da
+        image: ghcr.io/diwise/context-broker@sha256:6ffd837164067569aca44aad74d8d308e1e111d5df7c2f9df28c0fd5bed00cd7
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -323,7 +323,7 @@ spec:
           value: http://iot-agent/api/v0/messages
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-agent@sha256:6d936a8551200b9f40a660e11ed34722996150e5d3fc9e1dbefee1ddaf5bfa9d
+        image: ghcr.io/diwise/iot-agent@sha256:c15dda3dca06188baff6ce8fa80aaccffc32cfe5d4d4c7787b3c0b88d100b24f
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -379,7 +379,7 @@ spec:
           value: http://iot-device-mgmt
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-core@sha256:960030ae8130882768248e6ce5e183ed6cc945c62bef5c58324e8e69a7d81032
+        image: ghcr.io/diwise/iot-core@sha256:e09f165d850b014dbab6e2539cc2de5d8c885d34b43b8df97c2e77c4e09ad1e7
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -429,7 +429,7 @@ spec:
       - env:
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-device-mgmt@sha256:ca49c77ef39e2c61e1b209d8410a3b63dc3c08e13e3026fc92101fb448fe1112
+        image: ghcr.io/diwise/iot-device-mgmt@sha256:668c39a9bbbf9f48d8f1088810cdba8ae96ff7905f8665ca0e72cd1863239646
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -453,13 +453,19 @@ spec:
             port: default-port
         volumeMounts:
         - mountPath: /opt/diwise/config
-          name: conf-volume-devices-cfg
+          name: conf-volume
+          readOnly: true
+        - mountPath: /opt/diwise/config/data
+          name: conf-volume-data
           readOnly: true
       serviceAccountName: iot-device-mgmt
       volumes:
       - configMap:
           name: known-devices-cm
-        name: conf-volume-devices-cfg
+        name: conf-volume-data
+      - configMap:
+          name: dev-mgmt-cfg-cm
+        name: conf-volume
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -484,7 +490,7 @@ spec:
         app.kubernetes.io/name: iot-device-mgmt-web
     spec:
       containers:
-      - image: ghcr.io/diwise/iot-device-mgmt-web@sha256:4247ff44c4fd48e5bea5d6a3a1a7ca23c8b1444495d0def2917939cc3e267495
+      - image: ghcr.io/diwise/iot-device-mgmt-web@sha256:856f4cb7c102f8c5eb8355b9c200a33892f4425657e8bbfddb2970a7bf88ee90
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -547,7 +553,7 @@ spec:
           value: http://context-broker
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-transform-fiware@sha256:6cd5d77468213fffb39dc5fa13174223a9eff8f6e454530fb4a08527f49c7b4e
+        image: ghcr.io/diwise/iot-transform-fiware@sha256:424542a243c15fb1a1722177e851791554ed4b9c9ff3c8ea7830399be52ee931
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
