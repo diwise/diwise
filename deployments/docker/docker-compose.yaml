@@ -40,7 +40,7 @@ services:
       retries: 10
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-35beddbb4a3341ce7a226622a8bef664f91f3803'
+    image: 'ghcr.io/diwise/iot-agent:prod-d899fd71567da71138137b02e27861b4e087d23a'
     restart: always
     depends_on:
       iot-device-mgmt:
