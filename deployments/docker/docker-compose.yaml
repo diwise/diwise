@@ -73,7 +73,7 @@ services:
       - '8080'
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-d7a989e63facfedca8654b5b1b826b698b612beb'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-66a6b0bc0aef2e245985316d538ff9771d07eac6'
     restart: always
     depends_on:
       keycloak:
@@ -127,7 +127,7 @@ services:
       start_period: 20s
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-1d1a0c4d110a49f665d092d8c4cf3128d5562f6c'
+    image: 'ghcr.io/diwise/context-broker:prod-f9eff5f08ece6708a967eb0438c7f6ea3598aaaf'
     restart: always
     environment:
       CONTEXT_BROKER_CLIENT_DEBUG: 'true'
@@ -237,7 +237,7 @@ services:
       start_period: 10s
 
   grafana:
-    image: grafana/grafana:9.2.4
+    image: grafana/grafana:9.2.6
     command: [ '--config', '/usr/share/grafana/custom.ini' ]
     environment:
       GF_SERVER_DOMAIN: diwise.local
