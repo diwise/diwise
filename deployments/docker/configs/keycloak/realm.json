@@ -464,7 +464,7 @@
         "emailVerified": true,
         "requiredActions": [],
         "attributes": {
-          "tenants": "default"
+          "tenants": ["default"]
         },
         "credentials": [
           {
