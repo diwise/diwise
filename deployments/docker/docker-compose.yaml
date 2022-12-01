@@ -11,6 +11,8 @@ services:
     depends_on:
       context-broker:
         condition: service_healthy
+      grafana:
+        condition: service_healthy
       iot-device-mgmt-web:
         condition: service_healthy
     volumes:
@@ -22,6 +24,7 @@ services:
     ports:
       - '8443:443'
       - '8444:444'
+
 
   iot-device-mgmt-web:
     image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-199295817a1c561ee53e758bd1f2fe2f15c0def2'
@@ -38,6 +41,7 @@ services:
       interval: 3s
       timeout: 2s
       retries: 10
+
 
   iot-agent:
     image: 'ghcr.io/diwise/iot-agent:prod-d899fd71567da71138137b02e27861b4e087d23a'
@@ -57,6 +61,7 @@ services:
     ports:
       - '8080'
 
+
   iot-core:
     image: 'ghcr.io/diwise/iot-core:prod-396e0bff3297db1cd4a91d191f02484d0918038c'
     restart: always
@@ -71,6 +76,7 @@ services:
       OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
     ports:
       - '8080'
+
 
   iot-device-mgmt:
     image: 'ghcr.io/diwise/iot-device-mgmt:prod-66a6b0bc0aef2e245985316d538ff9771d07eac6'
@@ -94,6 +100,7 @@ services:
       retries: 30
       start_period: 10s
 
+
   iot-transform-fiware:
     image: 'ghcr.io/diwise/iot-transform-fiware:prod-8e97928930b5bc8ed15fd81d1a3700639a35f9c8'
     restart: always
@@ -105,6 +112,7 @@ services:
     environment:
       NGSI_CB_URL: 'http://context-broker:8080'
       RABBITMQ_HOST: 'rabbitmq'
+
 
   rabbitmq:
     image: 'bitnami/rabbitmq:3.8'
@@ -125,6 +133,7 @@ services:
       timeout: 2s
       retries: 60
       start_period: 20s
+
 
   context-broker:
     image: 'ghcr.io/diwise/context-broker:prod-f9eff5f08ece6708a967eb0438c7f6ea3598aaaf'
@@ -204,6 +213,7 @@ services:
     ports:
       - '8183:8081'
 
+
   keycloak:
     image: quay.io/keycloak/keycloak:20.0
     command:
@@ -224,17 +234,12 @@ services:
     volumes:
       - ./configs/keycloak/realm.json:/application-realm.json
     healthcheck:
-      test:
-        [
-          "CMD",
-          "curl",
-          "-f",
-          "http://localhost:8080/health/ready"
-        ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health/ready" ]
       interval: 5s
       timeout: 5s
       retries: 36
       start_period: 10s
+
 
   grafana:
     image: grafana/grafana:9.2.6
@@ -251,6 +256,13 @@ services:
       - grafana-data:/var/lib/grafana
     ports:
       - '3000'
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health" ]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+      start_period: 5s
+
 
 volumes:
   rabbitmq_data:
