@@ -27,7 +27,7 @@ services:
 
 
   iot-device-mgmt-web:
-    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-199295817a1c561ee53e758bd1f2fe2f15c0def2'
+    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-b6ea144499af19d3ad0e47ae465a4de1aabba391'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -79,7 +79,7 @@ services:
 
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-66a6b0bc0aef2e245985316d538ff9771d07eac6'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-2ae2497f14fa0f69b177aeee17e7d2832ee67bd6'
     restart: always
     depends_on:
       keycloak:
