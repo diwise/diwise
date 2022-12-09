@@ -19,5 +19,7 @@ tenants:
           type: Device
         - idPattern: ^urn:ngsi-ld:ExerciseTrail:.+
           type: ExerciseTrail
+        - idPattern: ^urn:ngsi-ld:IndoorEnvironmentObserved:.+
+          type: IndoorEnvironmentObserved
         - idPattern: ^urn:ngsi-ld:WaterConsumptionObserved:.+
           type: WaterConsumptionObserved
