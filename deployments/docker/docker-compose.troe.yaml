@@ -11,7 +11,7 @@ services:
       ORIONLD_TROE_HOST: 'timescale'
 
   timescale:
-    image: timescale/timescaledb-ha:pg14-latest    
+    image: timescale/timescaledb-ha:pg14-latest
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U orion" ]
       interval: 15s
@@ -28,15 +28,18 @@ services:
       - default
 
   mintaka:
-    image: fiware/mintaka:0.5.25
+    image: fiware/mintaka:0.5.28
     restart: always
+    depends_on:
+      timescale:
+        condition: service_healthy
     environment:
       DATASOURCES_DEFAULT_HOST: 'timescale'
       DATASOURCES_DEFAULT_USERNAME: 'orion'
       DATASOURCES_DEFAULT_PASSWORD: 'orion'
       DATASOURCES_DEFAULT_DATABSE: 'orion'
+      LOGGERS_LEVELS_ROOT: 'INFO'
     ports:
       - "8080"
     networks:
       - default
-      
