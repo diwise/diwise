@@ -11,6 +11,8 @@ services:
     depends_on:
       context-broker:
         condition: service_healthy
+      grafana:
+        condition: service_healthy
       iot-device-mgmt-web:
         condition: service_healthy
     volumes:
@@ -251,6 +253,19 @@ services:
       - grafana-data:/var/lib/grafana
     ports:
       - '3000'
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "--spider",
+          "http://localhost:3000/api/health"
+        ]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+      start_period: 5s
 
 volumes:
   rabbitmq_data:
