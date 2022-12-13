@@ -95,7 +95,7 @@ services:
       start_period: 10s
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-8e97928930b5bc8ed15fd81d1a3700639a35f9c8'
+    image: 'ghcr.io/diwise/iot-transform-fiware:prod-47ae4daa8ac6f10816503b9af558f2c067219464'
     restart: always
     depends_on:
       rabbitmq:
