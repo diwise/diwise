@@ -129,7 +129,7 @@ services:
       start_period: 20s
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-adbd2b9cfd56493a10d3fba7000d0005fad2a172'
+    image: 'ghcr.io/diwise/context-broker:prod-d3c0f8e67dc635890436fd4c9e4e4ce4847ceb15'
     restart: always
     environment:
       CONTEXT_BROKER_CLIENT_DEBUG: 'true'
@@ -150,7 +150,7 @@ services:
       start_period: 10s
 
   orion-ld:
-    image: 'quay.io/fiware/orion-ld@sha256:98f4c6e52e834c04910194fe00715064e4f6a78e4231a0813824b282376a338d'
+    image: 'quay.io/fiware/orion-ld@sha256:a65adbface4d5467add735d01c7204951e3c474ef8fc901fbd3a2af285beafea'
     restart: always
     command: [ '-experimental', '-logLevel', 'DEBUG' ]
     environment:
