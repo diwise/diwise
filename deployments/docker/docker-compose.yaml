@@ -129,7 +129,7 @@ services:
       start_period: 20s
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-d3c0f8e67dc635890436fd4c9e4e4ce4847ceb15'
+    image: 'ghcr.io/diwise/context-broker:prod-6e3cf0da44a92c85e4330c57cb5f907acbf84393'
     restart: always
     environment:
       CONTEXT_BROKER_CLIENT_DEBUG: 'true'
@@ -140,6 +140,7 @@ services:
         condition: service_healthy
     volumes:
       - ./configs/diwise/context-broker.yaml:/opt/diwise/config/default.yaml
+      - ./configs/diwise/context-broker-auth.rego:/opt/diwise/config/authz.rego
     ports:
       - '8080'
     healthcheck:
