@@ -240,7 +240,7 @@ services:
       start_period: 10s
 
   grafana:
-    image: grafana/grafana:9.2.6
+    image: grafana/grafana:9.2.7
     command: [ '--config', '/usr/share/grafana/custom.ini' ]
     environment:
       GF_SERVER_DOMAIN: diwise.local
