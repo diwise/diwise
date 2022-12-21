@@ -129,7 +129,7 @@ services:
       start_period: 20s
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-6e3cf0da44a92c85e4330c57cb5f907acbf84393'
+    image: 'ghcr.io/diwise/context-broker:prod-9f3b4f349f72c95af4d91ff2ff838066f209b842'
     restart: always
     environment:
       CONTEXT_BROKER_CLIENT_DEBUG: 'true'
