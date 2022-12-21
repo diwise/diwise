@@ -91,9 +91,9 @@ services:
       - '8080'
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
-      interval: 5s
+      interval: 2s
       timeout: 5s
-      retries: 30
+      retries: 60
       start_period: 10s
 
   iot-transform-fiware:
@@ -128,6 +128,7 @@ services:
       retries: 60
       start_period: 20s
 
+
   context-broker:
     image: 'ghcr.io/diwise/context-broker:prod-9f3b4f349f72c95af4d91ff2ff838066f209b842'
     restart: always
@@ -138,6 +139,8 @@ services:
         condition: service_healthy
       orion-ld:
         condition: service_healthy
+      mintaka-svc:
+        condition: service_healthy
     volumes:
       - ./configs/diwise/context-broker.yaml:/opt/diwise/config/default.yaml
       - ./configs/diwise/context-broker-auth.rego:/opt/diwise/config/authz.rego
@@ -145,10 +148,11 @@ services:
       - '8080'
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
-      interval: 5s
+      interval: 2s
       timeout: 2s
-      retries: 12
-      start_period: 10s
+      retries: 30
+      start_period: 5s
+
 
   orion-ld:
     image: 'quay.io/fiware/orion-ld@sha256:a65adbface4d5467add735d01c7204951e3c474ef8fc901fbd3a2af285beafea'
@@ -158,12 +162,17 @@ services:
       ORIONLD_MONGO_HOST: 'mongodb'
       ORIONLD_MONGO_USER: 'admin'
       ORIONLD_MONGO_PASSWORD: 'password'
+      ORIONLD_TROE: 'TRUE'
+      ORIONLD_TROE_USER: 'orion'
+      ORIONLD_TROE_PWD: 'orion'
+      ORIONLD_TROE_HOST: 'timescale'
       ORIONLD_LOG_FOR_HUMANS: 'TRUE'
-      ORIONLD_TROE: 'FALSE'
       ORIONLD_DISABLE_FILE_LOG: 'TRUE'
     depends_on:
       mongodb:
         condition: service_started
+      timescale:
+        condition: service_healthy
     ports:
       - '1026'
     healthcheck:
@@ -176,8 +185,63 @@ services:
         ]
       interval: 2s
       timeout: 2s
-      retries: 10
+      retries: 15
       start_period: 10s
+
+
+  mintaka-svc:
+    image: fiware/mintaka:0.5.28
+    restart: always
+    depends_on:
+      timescale:
+        condition: service_healthy
+    environment:
+      DATASOURCES_DEFAULT_HOST: 'timescale'
+      DATASOURCES_DEFAULT_USERNAME: 'orion'
+      DATASOURCES_DEFAULT_PASSWORD: 'orion'
+      DATASOURCES_DEFAULT_DATABSE: 'orion'
+      LOGGERS_LEVELS_ROOT: 'INFO'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+      start_period: 5s
+    ports:
+      - "8080"
+
+
+  mintaka:
+    image: 'registry.access.redhat.com/ubi8/nginx-120'
+    command:
+      - nginx
+      - -g
+      - daemon off;
+    restart: always
+    depends_on:
+      mintaka-svc:
+        condition: service_healthy
+    volumes:
+      - ./configs/proxy/nginx-mintaka.conf:/etc/nginx/nginx.conf
+    ports:
+      - "8080"
+
+
+  timescale:
+    image: timescale/timescaledb-ha:pg14-latest
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U orion" ]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    environment:
+      POSTGRES_USER: 'orion'
+      POSTGRES_PASSWORD: 'orion'
+      POSTGRES_HOST_AUTH_METHOD: 'trust'
+    ports:
+      - "5432"
+
 
   mongodb:
     image: mongo:5
