@@ -10,6 +10,7 @@ services:
       ORIONLD_TROE_PWD: 'orion'
       ORIONLD_TROE_HOST: 'timescale'
 
+
   timescale:
     image: timescale/timescaledb-ha:pg14-latest
     healthcheck:
@@ -24,10 +25,9 @@ services:
       POSTGRES_HOST_AUTH_METHOD: 'trust'
     ports:
       - "5432"
-    networks:
-      - default
 
-  mintaka:
+
+  mintaka-svc:
     image: fiware/mintaka:0.5.28
     restart: always
     depends_on:
@@ -39,7 +39,27 @@ services:
       DATASOURCES_DEFAULT_PASSWORD: 'orion'
       DATASOURCES_DEFAULT_DATABSE: 'orion'
       LOGGERS_LEVELS_ROOT: 'INFO'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 5s
+      timeout: 2s
+      retries: 12
+      start_period: 5s
     ports:
       - "8080"
-    networks:
-      - default
+
+
+  mintaka:
+    image: 'registry.access.redhat.com/ubi8/nginx-120'
+    command:
+      - nginx
+      - -g
+      - daemon off;
+    restart: always
+    depends_on:
+      mintaka-svc:
+        condition: service_healthy
+    volumes:
+      - ./configs/proxy/nginx-mintaka.conf:/etc/nginx/nginx.conf
+    ports:
+      - "8080"
