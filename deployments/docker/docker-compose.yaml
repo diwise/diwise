@@ -177,15 +177,10 @@ services:
       - '1026'
     healthcheck:
       test:
-        [
-          "CMD",
-          "curl",
-          "-f",
-          "http://localhost:1026/ngsi-ld/v1/types"
-        ]
+        [ "CMD", "curl", "-f", "http://localhost:1026/ngsi-ld/v1/types" ]
       interval: 2s
-      timeout: 2s
-      retries: 15
+      timeout: 5s
+      retries: 60
       start_period: 10s
 
 
