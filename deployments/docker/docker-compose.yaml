@@ -170,7 +170,7 @@ services:
       ORIONLD_DISABLE_FILE_LOG: 'TRUE'
     depends_on:
       mongodb:
-        condition: service_started
+        condition: service_healthy
       timescale:
         condition: service_healthy
     ports:
@@ -180,7 +180,7 @@ services:
         [ "CMD", "curl", "-f", "http://localhost:1026/ngsi-ld/v1/types" ]
       interval: 2s
       timeout: 5s
-      retries: 60
+      retries: 120
       start_period: 10s
 
 
@@ -240,6 +240,12 @@ services:
 
   mongodb:
     image: mongo:5
+    healthcheck:
+      test: ["CMD-SHELL", "mongo", "--port", "27017", "-u", "admin", "-p", "password", "--eval", "\"db.adminCommand('ping')\""]
+      interval: 5s
+      timeout: 1s
+      retries: 12
+      start_period: 10s
     environment:
       MONGO_INITDB_ROOT_USERNAME: 'admin'
       MONGO_INITDB_ROOT_PASSWORD: 'password'
@@ -248,6 +254,7 @@ services:
     command: --nojournal --quiet
     volumes:
       - mongo-db:/data
+
 
   mongo-express:
     image: mongo-express
