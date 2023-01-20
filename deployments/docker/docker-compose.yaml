@@ -185,7 +185,7 @@ services:
 
 
   mintaka-svc:
-    image: fiware/mintaka:0.5.28
+    image: fiware/mintaka:0.5.31
     restart: always
     depends_on:
       timescale:
@@ -306,7 +306,7 @@ services:
       start_period: 10s
 
   grafana:
-    image: grafana/grafana:9.2.7
+    image: grafana/grafana:9.3.2
     command: [ '--config', '/usr/share/grafana/custom.ini' ]
     environment:
       GF_SERVER_DOMAIN: diwise.local
