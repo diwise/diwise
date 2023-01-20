@@ -109,8 +109,8 @@ services:
       RABBITMQ_HOST: 'rabbitmq'
 
   rabbitmq:
-    image: 'bitnami/rabbitmq:3.8'
-    #image: 'arm64v8/rabbitmq:3.8'
+    #image: 'bitnami/rabbitmq:3.8'
+    image: 'arm64v8/rabbitmq:3.8'
     environment:
       RABBITMQ_DEFAULT_USER: 'user'
       RABBITMQ_DEFAULT_PASS: 'bitnami'
@@ -128,7 +128,6 @@ services:
       retries: 60
       start_period: 20s
 
-
   context-broker:
     image: 'ghcr.io/diwise/context-broker:prod-9f3b4f349f72c95af4d91ff2ff838066f209b842'
     restart: always
@@ -136,8 +135,6 @@ services:
       CONTEXT_BROKER_CLIENT_DEBUG: 'true'
     depends_on:
       keycloak:
-        condition: service_healthy
-      orion-ld:
         condition: service_healthy
       mintaka-svc:
         condition: service_healthy
@@ -152,7 +149,6 @@ services:
       timeout: 2s
       retries: 30
       start_period: 5s
-
 
   orion-ld:
     image: 'quay.io/fiware/orion-ld@sha256:a65adbface4d5467add735d01c7204951e3c474ef8fc901fbd3a2af285beafea'
@@ -183,9 +179,8 @@ services:
       retries: 120
       start_period: 10s
 
-
   mintaka-svc:
-    image: fiware/mintaka:0.5.28
+    image: fiware/mintaka:0.5.31
     restart: always
     depends_on:
       timescale:
@@ -205,7 +200,6 @@ services:
     ports:
       - "8080"
 
-
   mintaka:
     image: 'registry.access.redhat.com/ubi8/nginx-120'
     command:
@@ -220,7 +214,6 @@ services:
       - ./configs/proxy/nginx-mintaka.conf:/etc/nginx/nginx.conf
     ports:
       - "8080"
-
 
   timescale:
     image: timescale/timescaledb-ha:pg14-latest
@@ -237,15 +230,8 @@ services:
     ports:
       - "5432"
 
-
   mongodb:
     image: mongo:5
-    healthcheck:
-      test: ["CMD-SHELL", "mongo", "--port", "27017", "-u", "admin", "-p", "password", "--eval", "\"db.adminCommand('ping')\""]
-      interval: 5s
-      timeout: 1s
-      retries: 12
-      start_period: 10s
     environment:
       MONGO_INITDB_ROOT_USERNAME: 'admin'
       MONGO_INITDB_ROOT_PASSWORD: 'password'
@@ -254,8 +240,13 @@ services:
     command: --nojournal --quiet
     volumes:
       - mongo-db:/data
-
-
+    healthcheck:
+      test: ["CMD-SHELL", "mongo", "--port", "27017", "-u", "admin", "-p", "password", "--eval", "\"db.adminCommand('ping')\""]
+      interval: 5s
+      timeout: 1s
+      retries: 12
+      start_period: 10s
+    
   mongo-express:
     image: mongo-express
     restart: always
@@ -267,9 +258,6 @@ services:
       ME_CONFIG_MONGODB_ADMINUSERNAME: 'admin'
       ME_CONFIG_MONGODB_ADMINPASSWORD: 'password'
       ME_CONFIG_BASICAUTH_USERNAME: ''
-    depends_on:
-      orion-ld:
-        condition: service_healthy
     ports:
       - '8183:8081'
 
@@ -306,7 +294,7 @@ services:
       start_period: 10s
 
   grafana:
-    image: grafana/grafana:9.2.7
+    image: grafana/grafana:9.3.2
     command: [ '--config', '/usr/share/grafana/custom.ini' ]
     environment:
       GF_SERVER_DOMAIN: diwise.local
