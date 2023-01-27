@@ -25,8 +25,9 @@ services:
       - '8443:443'
       - '8444:444'
 
+
   iot-device-mgmt-web:
-    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-f09ba58bdb410b561645b0d48808b9bc6244d872'
+    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-74395085fa3558bdfbf78fae0f3c4014e6fe2c3f'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -41,8 +42,9 @@ services:
       timeout: 2s
       retries: 10
 
+
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-52b255a7855cae89b2e1ec53c84f19542d57f4dd'
+    image: 'ghcr.io/diwise/iot-agent:prod-c6c34d53c2c6b03f1c0102ff47411c0766dca423'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -59,6 +61,7 @@ services:
     ports:
       - '8080'
 
+
   iot-core:
     image: 'ghcr.io/diwise/iot-core:prod-396e0bff3297db1cd4a91d191f02484d0918038c'
     restart: always
@@ -74,8 +77,9 @@ services:
     ports:
       - '8080'
 
+
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-2ae2497f14fa0f69b177aeee17e7d2832ee67bd6'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-dcf7df68730df0c1fa7de57ddd20b26dd5181e4c'
     restart: always
     depends_on:
       keycloak:
@@ -96,8 +100,9 @@ services:
       retries: 60
       start_period: 10s
 
+
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-47ae4daa8ac6f10816503b9af558f2c067219464'
+    image: 'ghcr.io/diwise/iot-transform-fiware:prod-4047c5ea25ea68636c7e4f7b3d42fa52811e1880'
     restart: always
     depends_on:
       rabbitmq:
@@ -107,6 +112,7 @@ services:
     environment:
       NGSI_CB_URL: 'http://context-broker:8080'
       RABBITMQ_HOST: 'rabbitmq'
+
 
   rabbitmq:
     image: 'bitnami/rabbitmq:3.8'
@@ -130,7 +136,7 @@ services:
 
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-9f3b4f349f72c95af4d91ff2ff838066f209b842'
+    image: 'ghcr.io/diwise/context-broker:prod-e2c73c8599f42f09b52d46c442892f90e2b22b80'
     restart: always
     environment:
       CONTEXT_BROKER_CLIENT_DEBUG: 'true'
@@ -179,8 +185,8 @@ services:
       test: [ "CMD", "curl", "-f", "http://localhost:1026/ngsi-ld/v1/types" ]
       interval: 2s
       timeout: 5s
-      retries: 120
-      start_period: 10s
+      retries: 150
+      start_period: 30s
 
 
   mintaka-svc:
@@ -272,6 +278,7 @@ services:
     ports:
       - '8183:8081'
 
+
   keycloak:
     image: quay.io/keycloak/keycloak:20.0
     command:
@@ -304,6 +311,7 @@ services:
       retries: 36
       start_period: 10s
 
+
   grafana:
     image: grafana/grafana:9.3.2
     command: [ '--config', '/usr/share/grafana/custom.ini' ]
@@ -332,6 +340,7 @@ services:
       timeout: 2s
       retries: 30
       start_period: 5s
+
 
 volumes:
   rabbitmq_data:
