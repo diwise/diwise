@@ -176,8 +176,7 @@ services:
     ports:
       - '1026'
     healthcheck:
-      test:
-        [ "CMD", "curl", "-f", "http://localhost:1026/ngsi-ld/v1/types" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:1026/ngsi-ld/v1/types" ]
       interval: 2s
       timeout: 5s
       retries: 120
