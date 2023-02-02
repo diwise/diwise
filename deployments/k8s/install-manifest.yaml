@@ -379,7 +379,7 @@ spec:
           value: http://iot-device-mgmt
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-core@sha256:27c09722ade5959b8bb3798c9ef3de11e1c71a809948b12e72cbe7377bdbf782
+        image: ghcr.io/diwise/iot-core@sha256:a2f5781efd1e223cb943453b1afd6661e83a167696aa6e662e3f3818f9ab78c3
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
