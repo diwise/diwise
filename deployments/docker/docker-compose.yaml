@@ -115,8 +115,8 @@ services:
 
 
   rabbitmq:
-    image: 'bitnami/rabbitmq:3.8'
-    #image: 'arm64v8/rabbitmq:3.8'
+    image: 'bitnami/rabbitmq:3.11'
+    #image: 'arm64v8/rabbitmq:3.11'
     environment:
       RABBITMQ_DEFAULT_USER: 'user'
       RABBITMQ_DEFAULT_PASS: 'bitnami'
@@ -127,6 +127,7 @@ services:
       - '15672'
     volumes:
       - 'rabbitmq_data:/bitnami'
+      - './configs/rabbitmq/rabbitmq.conf:/opt/bitnami/rabbitmq/etc/rabbitmq/rabbitmq.conf'
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 2s
