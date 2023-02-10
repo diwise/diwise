@@ -79,11 +79,21 @@ services:
   otel-collector:
     image: 'otel/opentelemetry-collector:0.69.0'
     command: '--config /etc/otel-config.yaml'
+    depends_on:
+      iot-device-mgmt:
+        condition: service_healthy
     volumes:
      - ./configs/opentelemetry/otel-config.yaml:/etc/otel-config.yaml
     restart: always
     ports:
       - '4318'
+
+
+  grafana:
+    volumes:
+      - ./configs/grafana/dashboard-provisioning.yaml:/etc/grafana/provisioning/dashboards/provisioning.yaml
+      - ./configs/grafana/dashboards:/etc/dashboards
+      - ./configs/grafana/datasources:/etc/grafana/provisioning/datasources
 
 
   tempo:
@@ -110,6 +120,15 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+  
+
+  mimir:
+    image: grafana/mimir:2.6.0
+    command: [ '--config.file=/etc/mimir/compose.yaml' ]
+    volumes:
+      - ./configs/mimir/config.yaml:/etc/mimir/compose.yaml
+    ports:
+      - '9009'
 
 
   # We will be setting up fluent-bit as a docker logging driver to collect log output from the other containers and forward it to loki
@@ -132,4 +151,3 @@ services:
       timeout: 5s
       retries: 24
       start_period: 10s
-

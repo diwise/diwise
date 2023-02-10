@@ -125,8 +125,10 @@ services:
       - '5672'
       - '25672'
       - '15672'
+      - '15692'
     volumes:
       - 'rabbitmq_data:/bitnami'
+      - './configs/rabbitmq/enabled_plugins:/opt/bitnami/rabbitmq/etc/rabbitmq/enabled_plugins'
       - './configs/rabbitmq/rabbitmq.conf:/opt/bitnami/rabbitmq/etc/rabbitmq/rabbitmq.conf'
     healthcheck:
       test: rabbitmq-diagnostics -q ping
@@ -186,7 +188,7 @@ services:
       test: [ "CMD", "curl", "-f", "http://localhost:1026/ngsi-ld/v1/types" ]
       interval: 2s
       timeout: 5s
-      retries: 60
+      retries: 150
       start_period: 30s
 
 
@@ -314,7 +316,7 @@ services:
 
 
   grafana:
-    image: grafana/grafana:9.3.2
+    image: grafana/grafana:9.3.6
     command: [ '--config', '/usr/share/grafana/custom.ini' ]
     environment:
       GF_SERVER_DOMAIN: diwise.local
@@ -324,7 +326,6 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: diwise
     volumes:
       - ./configs/grafana/custom.ini:/usr/share/grafana/custom.ini
-      - ./configs/grafana/datasources:/etc/grafana/provisioning/datasources
       - grafana-data:/var/lib/grafana
     ports:
       - '3000'

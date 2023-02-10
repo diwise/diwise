@@ -10,7 +10,7 @@ datasources:
       nodeGraph:
         enabled: true
  #     serviceMap:
- #       datasourceUid: 'prometheus'        
+ #       datasourceUid: 'prometheus'
   - name: Loki
     type: loki
     access: proxy
@@ -22,3 +22,6 @@ datasources:
         matcherRegex: '"traceID":\s?"(\w+)'
         name: TraceID
         url: $${__value.raw}
+  - name: Mimir
+    type: prometheus
+    url: http://mimir:9009/prometheus
