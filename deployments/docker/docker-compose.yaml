@@ -231,7 +231,8 @@ services:
 
 
   timescale:
-    image: timescale/timescaledb:latest-pg14
+    image: timescaledev/timescaledb-ha:pg14-multi-all
+    restart: always
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U orion" ]
       interval: 5s
