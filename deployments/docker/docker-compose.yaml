@@ -74,6 +74,8 @@ services:
       OAUTH2_TOKEN_URL: 'http://keycloak:8080/realms/diwise-local/protocol/openid-connect/token'
       OAUTH2_CLIENT_ID: 'diwise-devmgmt-api'
       OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
+    volumes:
+      - ./configs/diwise/features.csv:/opt/diwise/config/features.csv
     ports:
       - '8080'
 
