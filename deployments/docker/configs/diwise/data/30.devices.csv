@@ -1,2 +1,2 @@
 devEUI;internalID;lat;lon;where;types;decoder;name;description;active;tenant;interval
-a81758fffe06bfa3;intern-a81758fffe06bfa3;62.39160;17.30723;water;urn:oma:lwm2m:ext:3303,urn:oma:lwm2m:ext:3302,urn:oma:lwm2m:ext:3301;elsys_codec;;;true;default;0
+somedeveui;2172b317-13fe-40a0-9e01-2d1ea698dbd6;0.0;0.0;indoors;urn:oma:lwm2m:ext:3303;elsys_codec;;;true;default;0
