@@ -75,7 +75,7 @@ spec:
           httpGet:
             path: /ngsi-ld/v1/types
             port: default-port
-          timeoutSeconds: 2
+          timeoutSeconds: 5
         name: orion-ld
         ports:
         - containerPort: 1026
@@ -84,7 +84,7 @@ spec:
         resources:
           limits:
             cpu: 1
-            memory: 1Gi
+            memory: 2Gi
           requests:
             cpu: 500m
             memory: 250Mi
@@ -94,5 +94,5 @@ spec:
             path: /ngsi-ld/v1/types
             port: default-port
           periodSeconds: 10
-          timeoutSeconds: 2
+          timeoutSeconds: 5
       serviceAccountName: orion-ld
