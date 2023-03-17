@@ -141,7 +141,7 @@ services:
 
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-6cea149747eb6b85279120e2fb52c07cd531c2c1'
+    image: 'ghcr.io/diwise/context-broker:prod-05bfe58ce82d8f1ca7f1b93ac0d2ceed50f4fbaf'
     restart: always
     environment:
       CONTEXT_BROKER_CLIENT_DEBUG: 'true'
