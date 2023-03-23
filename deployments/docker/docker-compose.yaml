@@ -25,26 +25,8 @@ services:
       - '8443:443'
       - '8444:444'
 
-
-  iot-device-mgmt-web:
-    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-45cd20b9ad1ec4965cf85b8049e01d42b3577f17'
-    restart: always
-    depends_on:
-      iot-device-mgmt:
-        condition: service_healthy
-    volumes:
-      - ./configs/diwise/devmgmtweb-kc.json:/opt/app-root/src/device-management/config/keycloak.json
-    ports:
-      - '8080'
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
-      interval: 3s
-      timeout: 2s
-      retries: 10
-
-
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-08a4f5cafac94e5aaee9b66958bd732a79fc2d92'
+    image: 'ghcr.io/diwise/iot-agent:prod-bdab2cc9ed5071774e5e944686011283d79544d2'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -63,7 +45,7 @@ services:
 
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-1e5842b44220a4987fe80550d6032db238bb806a'
+    image: 'ghcr.io/diwise/iot-core:prod-878f63f5974be38c90bdd29817cf0415c69c8b8f'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -81,7 +63,7 @@ services:
 
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-81911d9e4698c986816d9700afad1dc7b6709a67'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-2d276e964fc2c096244ef5bd644099712296cb3e'
     restart: always
     depends_on:
       keycloak:
@@ -102,9 +84,25 @@ services:
       retries: 60
       start_period: 10s
 
+  iot-device-mgmt-web:
+    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-6771e7028c0cd2a11440813297e6c2e9665099a5'
+    restart: always
+    depends_on:
+      iot-device-mgmt:
+        condition: service_healthy
+    volumes:
+      - ./configs/diwise/devmgmtweb-kc.json:/opt/app-root/src/device-management/config/keycloak.json
+    ports:
+      - '8080'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-9d4deca567018e00daba658e3c9d0fc469bfa18c'
+    image: 'ghcr.io/diwise/iot-transform-fiware:prod-6d46b1db1dd3c7895d21c65870cc3933e4b0101e'
     restart: always
     depends_on:
       rabbitmq:
@@ -114,6 +112,29 @@ services:
     environment:
       NGSI_CB_URL: 'http://context-broker:8080'
       RABBITMQ_HOST: 'rabbitmq'
+
+  iot-events:
+    image: 'ghcr.io/diwise/iot-events:prod-97d44fefac37863102ab95e43dce62a144262de2'
+    restart: always
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      iot-device-mgmt:
+        condition: service_healthy
+    environment:
+      RABBITMQ_HOST: 'rabbitmq'
+    volumes:
+      - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
+    ports:
+      - '8080'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 2s
+      timeout: 5s
+      retries: 60
+      start_period: 10s
 
 
   rabbitmq:
@@ -195,7 +216,7 @@ services:
 
 
   mintaka-svc:
-    image: fiware/mintaka:0.5.31
+    image: fiware/mintaka:0.5.35
     restart: always
     depends_on:
       timescale:
