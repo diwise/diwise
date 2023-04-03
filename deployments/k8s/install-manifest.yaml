@@ -53,6 +53,16 @@ automountServiceAccountToken: true
 kind: ServiceAccount
 metadata:
   labels:
+    app.kubernetes.io/name: iot-events
+    app.kubernetes.io/part-of: iot-platform
+  name: iot-events
+  namespace: diwise
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
     app.kubernetes.io/name: iot-transform-fiware
     app.kubernetes.io/part-of: iot-platform
   name: iot-transform-fiware
@@ -78,6 +88,17 @@ metadata:
     app.kubernetes.io/name: orion-ld
     app.kubernetes.io/part-of: cip-platform
   name: orion-ld
+  namespace: diwise
+---
+apiVersion: v1
+data:
+  features.csv: |
+    featureID;type;subtype;sensorID;args
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/part-of: iot-platform
+  name: core-cfg-cm-cccfb25k9m
   namespace: diwise
 ---
 apiVersion: v1
@@ -120,6 +141,24 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
+    app.kubernetes.io/name: iot-core
+    app.kubernetes.io/part-of: iot-platform
+  name: iot-core
+  namespace: diwise
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: iot-core
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
     app.kubernetes.io/name: iot-device-mgmt
     app.kubernetes.io/part-of: iot-platform
   name: iot-device-mgmt
@@ -150,6 +189,24 @@ spec:
     targetPort: 8080
   selector:
     app.kubernetes.io/name: iot-device-mgmt-web
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: iot-events
+    app.kubernetes.io/part-of: iot-platform
+  name: iot-events
+  namespace: diwise
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: iot-events
   type: ClusterIP
 ---
 apiVersion: v1
@@ -237,7 +294,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: ghcr.io/diwise/context-broker@sha256:ec34bb56be331a0687c3200a2c6248347b6a91ae66b3da70547a4e7224fe79e9
+        image: ghcr.io/diwise/context-broker@sha256:a1697f2b2c37535db372a14b879c155fbc4f59603907f5c11c99ae3a2898542e
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -304,11 +361,6 @@ spec:
             secretKeyRef:
               key: mqtt-host
               name: authn-mqtt
-        - name: MQTT_TOPIC_0
-          valueFrom:
-            secretKeyRef:
-              key: mqtt-topic
-              name: authn-mqtt
         - name: MQTT_USER
           valueFrom:
             secretKeyRef:
@@ -323,7 +375,7 @@ spec:
           value: http://iot-agent/api/v0/messages
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-agent@sha256:f23833de271243e0f66f074b971ae5cc963ff0e8af4723a28a85bc7c9a8b08c7
+        image: ghcr.io/diwise/iot-agent@sha256:53b6020e1841262c10d8c36f04773038d1a161fc479c70598dd537cfec80c8dc
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -379,7 +431,7 @@ spec:
           value: http://iot-device-mgmt
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-core@sha256:a2f5781efd1e223cb943453b1afd6661e83a167696aa6e662e3f3818f9ab78c3
+        image: ghcr.io/diwise/iot-core@sha256:af42e374a1a7e01d2938c91bf28a5800a393badaa32707d824fe553a0d0752b5
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -401,7 +453,14 @@ spec:
           httpGet:
             path: /health
             port: default-port
+        volumeMounts:
+        - mountPath: /opt/diwise/config
+          name: conf-volume
       serviceAccountName: iot-core
+      volumes:
+      - configMap:
+          name: core-cfg-cm-cccfb25k9m
+        name: conf-volume
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -429,7 +488,7 @@ spec:
       - env:
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-device-mgmt@sha256:224d2c8cd011a267460e97c1fd82651eed7a88121d19b5deec4af0801f9f3a92
+        image: ghcr.io/diwise/iot-device-mgmt@sha256:f8e50aac8dfef81ae0fa8a3cfadce54d51cc998fe538949f7859357c43efd0a7
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -490,7 +549,7 @@ spec:
         app.kubernetes.io/name: iot-device-mgmt-web
     spec:
       containers:
-      - image: ghcr.io/diwise/iot-device-mgmt-web@sha256:b7ef15beb09f8559b7af25fa7de529ff153a6ff05b279a5d96284d24534b6250
+      - image: ghcr.io/diwise/iot-device-mgmt-web@sha256:7c93e34e24d10c9962bb555b351fb8dc08539e6ee893978dd0eebe2cb52ced66
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -525,6 +584,64 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
+    app.kubernetes.io/name: iot-events
+    app.kubernetes.io/part-of: iot-platform
+  name: iot-events
+  namespace: diwise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: iot-events
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: iot-events
+    spec:
+      containers:
+      - env:
+        - name: RABBITMQ_HOST
+          value: rabbitmq
+        image: ghcr.io/diwise/iot-events@sha256:13ea7bb176f1e9530f0392474a5dfa4b2638aa70efff8e17985e07a98d6d03d5
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: default-port
+        name: iot-events
+        ports:
+        - containerPort: 8080
+          name: default-port
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 250m
+            memory: 250Mi
+          requests:
+            cpu: 50m
+            memory: 100Mi
+        startupProbe:
+          httpGet:
+            path: /health
+            port: default-port
+        volumeMounts:
+        - mountPath: /opt/diwise/config
+          name: conf-volume
+          readOnly: true
+      serviceAccountName: iot-events
+      volumes:
+      - configMap:
+          name: iot-events-cfg-cm
+        name: conf-volume
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
     app.kubernetes.io/name: iot-transform-fiware
     app.kubernetes.io/part-of: iot-platform
   name: iot-transform-fiware
@@ -553,7 +670,7 @@ spec:
           value: http://context-broker
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-transform-fiware@sha256:e67ebbb7d747add74eda44cae3fc985c895cb17c69ea562a2d53852acb33c8c9
+        image: ghcr.io/diwise/iot-transform-fiware@sha256:551f728096310f8b0eb99bd22b541356e9e7d74019c0abf12217e191c6a1be92
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -774,7 +891,7 @@ spec:
           httpGet:
             path: /ngsi-ld/v1/types
             port: default-port
-          timeoutSeconds: 2
+          timeoutSeconds: 5
         name: orion-ld
         ports:
         - containerPort: 1026
@@ -783,7 +900,7 @@ spec:
         resources:
           limits:
             cpu: 1
-            memory: 1Gi
+            memory: 2Gi
           requests:
             cpu: 500m
             memory: 250Mi
@@ -793,5 +910,5 @@ spec:
             path: /ngsi-ld/v1/types
             port: default-port
           periodSeconds: 10
-          timeoutSeconds: 2
+          timeoutSeconds: 5
       serviceAccountName: orion-ld
