@@ -46,6 +46,21 @@ services:
       - fluentbit
 
 
+  iot-events:
+    depends_on:
+      fluentbit:
+        condition: service_healthy
+    environment:
+      OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
+    logging:
+      driver: fluentd
+      options:
+#        fluentd-address: fluentbit:24224
+        fluentd-async: 'true'
+    links:
+      - fluentbit
+
+
   iot-transform-fiware:
     depends_on:
       fluentbit:
