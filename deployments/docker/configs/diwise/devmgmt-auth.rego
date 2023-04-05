@@ -14,6 +14,17 @@ allow = response {
 	response := {"tenants": token.payload.tenants}
 }
 
+allow = response {
+	is_valid_token
+
+	input.method == "PATCH"
+	pathstart := array.slice(input.path, 0, 3)
+	pathstart == ["api", "v0", "alarms"]
+
+	response := {"tenants": token.payload.tenants}
+}
+
+
 issuers := {"http://keycloak:8080/realms/diwise-local"}
 
 # Connect to the specified issuer to query for openid metadata
