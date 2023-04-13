@@ -26,7 +26,7 @@ services:
       - '8444:444'
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-f640d44912e8e5907a8023b5a885c758d916f3f7'
+    image: 'ghcr.io/diwise/iot-agent:prod-d1258b69bddaecb33b0bc9cd9e65fd91e63c616a'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -45,7 +45,7 @@ services:
 
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-d7c6536a196c2328573eafbc7c5b0d80df3b0b68'
+    image: 'ghcr.io/diwise/iot-core:prod-686050f48904d1b6e85959ae43918aa1398c0cc6'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -63,7 +63,7 @@ services:
 
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-2eacf96acfd3203e1ddf22f55bce05dff7884b41'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-7e06e88dbafdd1542f1bb3571f46edb81f49eb6d'
     restart: always
     depends_on:
       keycloak:
@@ -73,7 +73,8 @@ services:
     environment:
       RABBITMQ_HOST: 'rabbitmq'
     volumes:
-      - ./configs/diwise/data:/opt/diwise/config/data
+      - ./configs/diwise/data/devices.csv:/opt/diwise/config/devices.csv
+      - ./configs/diwise/data/alarms.csv:/opt/diwise/config/alarms.csv
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
     ports:
       - '8080'
@@ -85,7 +86,7 @@ services:
       start_period: 10s
 
   iot-device-mgmt-web:
-    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-a09d28c6157525ab1c68edd35d258ea8418490f3'
+    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-7f6a6d33091fcb83108b6d87e80a923ec955a060'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -102,7 +103,7 @@ services:
 
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-24926513158a53ff8f239935d63afe6ebcc98a30'
+    image: 'ghcr.io/diwise/iot-transform-fiware:prod-555f3cbceb85d617656f2d8bdd666f3d3d4e54f6'
     restart: always
     depends_on:
       rabbitmq:

@@ -1,7 +1,3 @@
-deviceID;functionID;alarmName;alarmType;min;max;severity
-net:serva:iot:a81758fffe06bf9e;;batteryLevel;MIN;20;;1
-net:serva:iot:a81758fffe06bf9f;;batteryLevel;MIN;20;;1
-net:serva:iot:a81758fffe06bfa3;;batteryLevel;MIN;20;;1
-net:serva:iot:a81758fffe075557;;batteryLevel;MIN;20;;1
-net:serva:iot:a81758fffe0764f2;;batteryLevel;MIN;20;;1
-net:serva:iot:a81758fffe0764f6;;batteryLevel;MIN;20;;1
+deviceID;functionID;alarmName;alarmType;min;max;severity;description
+;;UPLINK_FCNT_RETRANSMISSION;-;;;-1;
+;;deviceNotObserved;-;;;2;
