@@ -45,7 +45,7 @@ services:
 
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-686050f48904d1b6e85959ae43918aa1398c0cc6'
+    image: 'ghcr.io/diwise/iot-core:prod-7fd7215de80c662e31bd0dbb2458ef4ed6e524a8'
     restart: always
     depends_on:
       iot-device-mgmt:
