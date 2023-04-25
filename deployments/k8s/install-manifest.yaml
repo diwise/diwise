@@ -73,6 +73,15 @@ automountServiceAccountToken: true
 kind: ServiceAccount
 metadata:
   labels:
+    app.kubernetes.io/part-of: cip-platform
+  name: mintaka
+  namespace: diwise
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
     app.kubernetes.io/component: orion-ld
     app.kubernetes.io/name: mongodb
     app.kubernetes.io/part-of: cip-platform
@@ -88,6 +97,15 @@ metadata:
     app.kubernetes.io/name: orion-ld
     app.kubernetes.io/part-of: cip-platform
   name: orion-ld
+  namespace: diwise
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/part-of: cip-platform
+  name: timescale
   namespace: diwise
 ---
 apiVersion: v1
@@ -214,6 +232,25 @@ kind: Service
 metadata:
   labels:
     app.kubernetes.io/component: orion-ld
+    app.kubernetes.io/name: mintaka
+    app.kubernetes.io/part-of: cip-platform
+  name: mintaka
+  namespace: diwise
+spec:
+  ports:
+  - name: default-port
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: mintaka
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: orion-ld
     app.kubernetes.io/name: mongo-express
     app.kubernetes.io/part-of: cip-platform
   name: mongo-express
@@ -264,6 +301,25 @@ spec:
     targetPort: 1026
   selector:
     app.kubernetes.io/name: orion-ld
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: orion-ld
+    app.kubernetes.io/name: timescale
+    app.kubernetes.io/part-of: cip-platform
+  name: timescale
+  namespace: diwise
+spec:
+  ports:
+  - name: timescaledb
+    port: 5432
+    protocol: TCP
+    targetPort: 5432
+  selector:
+    app.kubernetes.io/name: timescale
   type: ClusterIP
 ---
 apiVersion: apps/v1
@@ -375,7 +431,7 @@ spec:
           value: http://iot-agent/api/v0/messages
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-agent@sha256:53b6020e1841262c10d8c36f04773038d1a161fc479c70598dd537cfec80c8dc
+        image: ghcr.io/diwise/iot-agent@sha256:688e24259bf19be7861dd58a05aff65046d2bb56435e40f86d3292090a7b1232
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -431,7 +487,7 @@ spec:
           value: http://iot-device-mgmt
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-core@sha256:af42e374a1a7e01d2938c91bf28a5800a393badaa32707d824fe553a0d0752b5
+        image: ghcr.io/diwise/iot-core@sha256:79ae6caabd20efeb20a07d78bf90abb04d90a0add295399b4f41840ec9258e03
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -488,7 +544,7 @@ spec:
       - env:
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-device-mgmt@sha256:f8e50aac8dfef81ae0fa8a3cfadce54d51cc998fe538949f7859357c43efd0a7
+        image: ghcr.io/diwise/iot-device-mgmt@sha256:34d4a500c2fdb505ff3b2bbc6d16369c5a85fff29fceb7807582901b38730356
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -514,14 +570,8 @@ spec:
         - mountPath: /opt/diwise/config
           name: conf-volume
           readOnly: true
-        - mountPath: /opt/diwise/config/data
-          name: conf-volume-data
-          readOnly: true
       serviceAccountName: iot-device-mgmt
       volumes:
-      - configMap:
-          name: known-devices-cm
-        name: conf-volume-data
       - configMap:
           name: dev-mgmt-cfg-cm
         name: conf-volume
@@ -549,7 +599,7 @@ spec:
         app.kubernetes.io/name: iot-device-mgmt-web
     spec:
       containers:
-      - image: ghcr.io/diwise/iot-device-mgmt-web@sha256:7c93e34e24d10c9962bb555b351fb8dc08539e6ee893978dd0eebe2cb52ced66
+      - image: ghcr.io/diwise/iot-device-mgmt-web@sha256:017788cd75d15f2df2d93b528ce89a8a0cd9faa0045008e33fb94758ffd165ac
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -606,7 +656,7 @@ spec:
       - env:
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-events@sha256:13ea7bb176f1e9530f0392474a5dfa4b2638aa70efff8e17985e07a98d6d03d5
+        image: ghcr.io/diwise/iot-events@sha256:baecb4182095c80e5c02ef2ca1bc9d7de8620e6c64dacb3780da3fe0c775fcea
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -670,7 +720,7 @@ spec:
           value: http://context-broker
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-transform-fiware@sha256:551f728096310f8b0eb99bd22b541356e9e7d74019c0abf12217e191c6a1be92
+        image: ghcr.io/diwise/iot-transform-fiware@sha256:a96a738116a569aebe45a14d562cf5104adc2ec258aacb972dd5fcbe034ee114
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -693,6 +743,58 @@ spec:
             path: /health
             port: default-port
       serviceAccountName: iot-transform-fiware
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app.kubernetes.io/component: orion-ld
+    app.kubernetes.io/name: mintaka
+    app.kubernetes.io/part-of: cip-platform
+  name: mintaka
+  namespace: diwise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mintaka
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/name: mintaka
+    spec:
+      containers:
+      - env:
+        - name: DATASOURCES_DEFAULT_HOST
+          value: timescale
+        - name: DATASOURCES_DEFAULT_USERNAME
+          value: orion
+        - name: DATASOURCES_DEFAULT_PASSWORD
+          value: orion
+        - name: DATASOURCES_DEFAULT_DATABSE
+          value: orion
+        - name: LOGGERS_LEVELS_ROOT
+          value: INFO
+        image: fiware/mintaka:0.5.30
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: default-port
+        name: mintaka
+        ports:
+        - containerPort: 8080
+          name: default-port
+          protocol: TCP
+        resources: {}
+        startupProbe:
+          httpGet:
+            path: /health
+            port: default-port
+      serviceAccountName: mintaka
+status: {}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -912,3 +1014,54 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 5
       serviceAccountName: orion-ld
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app.kubernetes.io/component: orion-ld
+    app.kubernetes.io/name: timescale
+    app.kubernetes.io/part-of: cip-platform
+  name: timescale
+  namespace: diwise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: timescale
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/name: timescale
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_USER
+          value: orion
+        - name: POSTGRES_PASSWORD
+          value: orion
+        - name: POSTGRES_HOST_AUTH_METHOD
+          value: trust
+        image: timescale/timescaledb-ha:pg14-latest
+        livenessProbe:
+          exec:
+            command:
+            - bash
+            - -ec
+            - pg_isready -U orion
+          failureThreshold: 6
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: timescale
+        ports:
+        - containerPort: 5432
+          name: timescaledb
+          protocol: TCP
+        resources: {}
+      serviceAccountName: timescale
+status: {}

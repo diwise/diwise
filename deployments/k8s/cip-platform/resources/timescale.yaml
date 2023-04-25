@@ -1,0 +1,72 @@
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  name: timescale
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: orion-ld
+    app.kubernetes.io/name: timescale
+  name: timescale
+spec:
+  ports:
+  - name: timescaledb
+    port: 5432
+    protocol: TCP
+    targetPort: 5432
+  selector:
+    app.kubernetes.io/name: timescale
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app.kubernetes.io/component: orion-ld
+    app.kubernetes.io/name: timescale
+  name: timescale
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: timescale
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/name: timescale
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_USER
+          value: 'orion'
+        - name: POSTGRES_PASSWORD
+          value: 'orion'
+        - name: POSTGRES_HOST_AUTH_METHOD
+          value: 'trust'
+        image: timescale/timescaledb-ha:pg14-latest
+        name: timescale
+        livenessProbe:
+          exec:
+            command:
+            - bash
+            - -ec
+            - "pg_isready -U orion"
+          failureThreshold: 6
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        ports:
+        - containerPort: 5432
+          name: timescaledb
+          protocol: TCP
+        resources: {}
+      serviceAccountName: timescale
+status: {}

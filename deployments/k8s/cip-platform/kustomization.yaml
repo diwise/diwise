@@ -3,8 +3,10 @@ kind: Kustomization
 
 resources:
 - ssh://git@github.com/diwise/context-broker-config?depth=1
+- ./resources/mintaka.yaml
 - ./resources/mongodb.yaml
 - ./resources/orion-ld.yaml
+- ./resources/timescale.yaml
 
 transformers:
   - global-labels.yaml

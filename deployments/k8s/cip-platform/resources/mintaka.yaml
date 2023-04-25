@@ -1,0 +1,73 @@
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  name: mintaka
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: orion-ld
+    app.kubernetes.io/name: mintaka
+  name: mintaka
+spec:
+  ports:
+  - name: default-port
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: mintaka
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app.kubernetes.io/component: orion-ld
+    app.kubernetes.io/name: mintaka
+  name: mintaka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mintaka
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/name: mintaka
+    spec:
+      containers:
+      - env:
+        - name: DATASOURCES_DEFAULT_HOST
+          value: 'timescale'
+        - name: DATASOURCES_DEFAULT_USERNAME
+          value: 'orion'
+        - name: DATASOURCES_DEFAULT_PASSWORD
+          value: 'orion'
+        - name: DATASOURCES_DEFAULT_DATABSE
+          value: 'orion'
+        - name: LOGGERS_LEVELS_ROOT
+          value: 'INFO'
+        image: fiware/mintaka:0.5.30
+        name: mintaka
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: default-port
+        startupProbe:
+          httpGet:
+            path: /health
+            port: default-port
+        ports:
+        - containerPort: 8080
+          name: default-port
+          protocol: TCP
+        resources: {}
+      serviceAccountName: mintaka
+status: {}
