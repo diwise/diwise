@@ -431,7 +431,7 @@ spec:
           value: http://iot-agent/api/v0/messages
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-agent@sha256:688e24259bf19be7861dd58a05aff65046d2bb56435e40f86d3292090a7b1232
+        image: ghcr.io/diwise/iot-agent@sha256:53afb788943a99dd4f786f6ebeded608ee4707ddb59b83a81ede9c2090dc91b6
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -487,7 +487,7 @@ spec:
           value: http://iot-device-mgmt
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-core@sha256:79ae6caabd20efeb20a07d78bf90abb04d90a0add295399b4f41840ec9258e03
+        image: ghcr.io/diwise/iot-core@sha256:c48c230b44946e2883d4093c38ba58e0002926d647741ba00783f75b9bdaaf24
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -599,7 +599,7 @@ spec:
         app.kubernetes.io/name: iot-device-mgmt-web
     spec:
       containers:
-      - image: ghcr.io/diwise/iot-device-mgmt-web@sha256:017788cd75d15f2df2d93b528ce89a8a0cd9faa0045008e33fb94758ffd165ac
+      - image: ghcr.io/diwise/iot-device-mgmt-web@sha256:8fff5ad36ae5246875dcdba38239ef814f91692f1742cf930dc88f03dbc94581
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
