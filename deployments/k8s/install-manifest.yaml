@@ -599,7 +599,7 @@ spec:
         app.kubernetes.io/name: iot-device-mgmt-web
     spec:
       containers:
-      - image: ghcr.io/diwise/iot-device-mgmt-web@sha256:8fff5ad36ae5246875dcdba38239ef814f91692f1742cf930dc88f03dbc94581
+      - image: ghcr.io/diwise/iot-device-mgmt-web@sha256:e814a236fe4394966688a0d06a386d7ddeead41e1bbdf67ada0da2506bcbd186
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
