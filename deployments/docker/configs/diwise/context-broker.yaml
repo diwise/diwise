@@ -26,3 +26,5 @@ tenants:
           type: IndoorEnvironmentObserved
         - idPattern: ^urn:ngsi-ld:WaterConsumptionObserved:.+
           type: WaterConsumptionObserved
+        - idPattern: ^urn:ngsi-ld:GreenspaceRecord:.+
+          type: GreenspaceRecord          
