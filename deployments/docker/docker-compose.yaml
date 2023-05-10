@@ -42,6 +42,12 @@ services:
       APPSERVER_FACADE: 'chirpstack'
     ports:
       - '8080'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 2s
+      timeout: 5s
+      retries: 60
+      start_period: 10s
 
 
   iot-core:
@@ -60,10 +66,15 @@ services:
       - ./configs/diwise/functions.csv:/opt/diwise/config/functions.csv
     ports:
       - '8080'
-
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 2s
+      timeout: 5s
+      retries: 60
+      start_period: 10s
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-7e06e88dbafdd1542f1bb3571f46edb81f49eb6d'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-3b5ee6a4efc5b22fdaf7d0794ce1afe0235a7190'
     restart: always
     depends_on:
       keycloak:
@@ -103,7 +114,7 @@ services:
 
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-555f3cbceb85d617656f2d8bdd666f3d3d4e54f6'
+    image: 'ghcr.io/diwise/iot-transform-fiware:prod-4526154cc11e0a0366e65fc6a61392d374306102'
     restart: always
     depends_on:
       rabbitmq:
@@ -115,7 +126,7 @@ services:
       RABBITMQ_HOST: 'rabbitmq'
 
   iot-events:
-    image: 'ghcr.io/diwise/iot-events:prod-7a07d38f291fc43bc32aa7caaa54d750e3f4bc1d'
+    image: 'ghcr.io/diwise/iot-events:prod-23a0590502dbd08109054abc9e92877b24f40bc7'
     restart: always
     depends_on:
       keycloak:
@@ -217,7 +228,7 @@ services:
 
 
   mintaka-svc:
-    image: fiware/mintaka:0.5.35
+    image: fiware/mintaka:0.5.36
     restart: always
     depends_on:
       timescale:
@@ -341,7 +352,7 @@ services:
 
 
   grafana:
-    image: grafana/grafana:9.3.6
+    image: grafana/grafana:9.3.13
     command: [ '--config', '/usr/share/grafana/custom.ini' ]
     environment:
       GF_SERVER_DOMAIN: diwise.local
