@@ -45,7 +45,7 @@ services:
 
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-7fd7215de80c662e31bd0dbb2458ef4ed6e524a8'
+    image: 'ghcr.io/diwise/iot-core:prod-05daa09be171b69977bd8354c3c9bf43b43a4e2e'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -86,7 +86,7 @@ services:
       start_period: 10s
 
   iot-device-mgmt-web:
-    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-7f6a6d33091fcb83108b6d87e80a923ec955a060'
+    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-4eeb621cc711a318efdb84fa6f8b0525e1ed8400'
     restart: always
     depends_on:
       iot-device-mgmt:
