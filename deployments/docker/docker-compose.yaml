@@ -26,7 +26,7 @@ services:
       - '8444:444'
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-615db82dbf59f9279985d5fc1ef239207ed30723'
+    image: 'ghcr.io/diwise/iot-agent:prod-26914f3bb72cb2ebdb51e354a442bfe3d1439c85'
     restart: always
     depends_on:
       iot-device-mgmt:
