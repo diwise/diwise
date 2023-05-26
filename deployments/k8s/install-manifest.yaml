@@ -73,6 +73,8 @@ automountServiceAccountToken: true
 kind: ServiceAccount
 metadata:
   labels:
+    app.kubernetes.io/component: orion-ld
+    app.kubernetes.io/name: mintaka
     app.kubernetes.io/part-of: cip-platform
   name: mintaka
   namespace: diwise
@@ -431,7 +433,7 @@ spec:
           value: http://iot-agent/api/v0/messages
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-agent@sha256:53afb788943a99dd4f786f6ebeded608ee4707ddb59b83a81ede9c2090dc91b6
+        image: ghcr.io/diwise/iot-agent@sha256:d72e0ec5024b581ea0947b9571492a4117f588e80589c479c2f738655cddd2ac
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -487,7 +489,7 @@ spec:
           value: http://iot-device-mgmt
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-core@sha256:c48c230b44946e2883d4093c38ba58e0002926d647741ba00783f75b9bdaaf24
+        image: ghcr.io/diwise/iot-core@sha256:acc3b87e8fab5d11717aaad8009e379dc62cdb15493305e10ff233a00f86dd92
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -544,7 +546,7 @@ spec:
       - env:
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-device-mgmt@sha256:34d4a500c2fdb505ff3b2bbc6d16369c5a85fff29fceb7807582901b38730356
+        image: ghcr.io/diwise/iot-device-mgmt@sha256:9d453ae8b49867fb33b9ba0ae42a3b251783a640affed20d255f11968ef062ce
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -599,7 +601,7 @@ spec:
         app.kubernetes.io/name: iot-device-mgmt-web
     spec:
       containers:
-      - image: ghcr.io/diwise/iot-device-mgmt-web@sha256:e814a236fe4394966688a0d06a386d7ddeead41e1bbdf67ada0da2506bcbd186
+      - image: ghcr.io/diwise/iot-device-mgmt-web@sha256:82dca0ec8230a14b6574b7e63f3fab4bdde5c161006d3c4efcd96bdfcc155ee5
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -720,7 +722,7 @@ spec:
           value: http://context-broker
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-transform-fiware@sha256:a96a738116a569aebe45a14d562cf5104adc2ec258aacb972dd5fcbe034ee114
+        image: ghcr.io/diwise/iot-transform-fiware@sha256:e0c361201a1191adb3ad11c50da8f2a3c775a6d809ab56998837aa71f1cb57ac
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -768,6 +770,8 @@ spec:
     spec:
       containers:
       - env:
+        - name: BASEPATH
+          value: /ngsi-ld/v1
         - name: DATASOURCES_DEFAULT_HOST
           value: timescale
         - name: DATASOURCES_DEFAULT_USERNAME
@@ -778,7 +782,7 @@ spec:
           value: orion
         - name: LOGGERS_LEVELS_ROOT
           value: INFO
-        image: fiware/mintaka:0.5.30
+        image: fiware/mintaka:0.5.37
         livenessProbe:
           httpGet:
             path: /health
@@ -1039,13 +1043,13 @@ spec:
     spec:
       containers:
       - env:
-        - name: POSTGRES_USER
+        - name: POSTGRESQL_USER
           value: orion
-        - name: POSTGRES_PASSWORD
+        - name: POSTGRESQL_PASSWORD
           value: orion
         - name: POSTGRES_HOST_AUTH_METHOD
           value: trust
-        image: timescale/timescaledb-ha:pg14-latest
+        image: timescale/timescaledb:latest-pg14-bitnami
         livenessProbe:
           exec:
             command:

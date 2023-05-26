@@ -3,6 +3,9 @@ apiVersion: v1
 automountServiceAccountToken: true
 kind: ServiceAccount
 metadata:
+  labels:
+    app.kubernetes.io/component: orion-ld
+    app.kubernetes.io/name: mintaka
   name: mintaka
 ---
 apiVersion: v1
@@ -44,6 +47,8 @@ spec:
     spec:
       containers:
       - env:
+        - name: BASEPATH
+          value: '/ngsi-ld/v1'
         - name: DATASOURCES_DEFAULT_HOST
           value: 'timescale'
         - name: DATASOURCES_DEFAULT_USERNAME
@@ -54,7 +59,7 @@ spec:
           value: 'orion'
         - name: LOGGERS_LEVELS_ROOT
           value: 'INFO'
-        image: fiware/mintaka:0.5.30
+        image: fiware/mintaka:0.5.37
         name: mintaka
         livenessProbe:
           httpGet:
