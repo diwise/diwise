@@ -52,11 +52,20 @@ spec:
         - name: DATASOURCES_DEFAULT_HOST
           value: 'timescale'
         - name: DATASOURCES_DEFAULT_USERNAME
-          value: 'orion'
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: authn-timescale
         - name: DATASOURCES_DEFAULT_PASSWORD
-          value: 'orion'
-        - name: DATASOURCES_DEFAULT_DATABSE
-          value: 'orion'
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: authn-timescale
+        - name: DATASOURCES_DEFAULT_DATABASE
+          valueFrom:
+            secretKeyRef:
+              key: database
+              name: authn-timescale
         - name: LOGGERS_LEVELS_ROOT
           value: 'INFO'
         image: fiware/mintaka:0.5.37

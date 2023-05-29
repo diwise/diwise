@@ -775,11 +775,20 @@ spec:
         - name: DATASOURCES_DEFAULT_HOST
           value: timescale
         - name: DATASOURCES_DEFAULT_USERNAME
-          value: orion
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: authn-timescale
         - name: DATASOURCES_DEFAULT_PASSWORD
-          value: orion
-        - name: DATASOURCES_DEFAULT_DATABSE
-          value: orion
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: authn-timescale
+        - name: DATASOURCES_DEFAULT_DATABASE
+          valueFrom:
+            secretKeyRef:
+              key: database
+              name: authn-timescale
         - name: LOGGERS_LEVELS_ROOT
           value: INFO
         image: fiware/mintaka:0.5.37
@@ -1044,9 +1053,15 @@ spec:
       containers:
       - env:
         - name: POSTGRESQL_USER
-          value: orion
+          valueFrom:
+            secretKeyRef:
+              key: superuser
+              name: authn-timescale
         - name: POSTGRESQL_PASSWORD
-          value: orion
+          valueFrom:
+            secretKeyRef:
+              key: superpass
+              name: authn-timescale
         - name: POSTGRES_HOST_AUTH_METHOD
           value: trust
         image: timescale/timescaledb:latest-pg14-bitnami
@@ -1055,7 +1070,7 @@ spec:
             command:
             - bash
             - -ec
-            - pg_isready -U orion
+            - pg_isready -U $(POSTGRESQL_USER)
           failureThreshold: 6
           initialDelaySeconds: 30
           periodSeconds: 10
