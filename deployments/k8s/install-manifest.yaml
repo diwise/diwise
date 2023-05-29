@@ -111,17 +111,6 @@ metadata:
   namespace: diwise
 ---
 apiVersion: v1
-data:
-  functions.csv: |
-    functionID;type;subtype;sensorID;args
-kind: ConfigMap
-metadata:
-  labels:
-    app.kubernetes.io/part-of: iot-platform
-  name: core-cfg-cm-679hfh8b5c
-  namespace: diwise
----
-apiVersion: v1
 kind: Service
 metadata:
   labels:
@@ -517,7 +506,7 @@ spec:
       serviceAccountName: iot-core
       volumes:
       - configMap:
-          name: core-cfg-cm-679hfh8b5c
+          name: core-cfg-cm
         name: conf-volume
 ---
 apiVersion: apps/v1
