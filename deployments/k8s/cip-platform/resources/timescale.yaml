@@ -63,7 +63,7 @@ spec:
             command:
             - bash
             - -ec
-            - "pg_isready -U $(POSTGRESQL_USER)"
+            - pg_isready -U "$(POSTGRESQL_USER)"
           failureThreshold: 6
           initialDelaySeconds: 30
           periodSeconds: 10
