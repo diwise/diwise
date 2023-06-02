@@ -478,7 +478,7 @@ spec:
           value: http://iot-device-mgmt
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-core@sha256:acc3b87e8fab5d11717aaad8009e379dc62cdb15493305e10ff233a00f86dd92
+        image: ghcr.io/diwise/iot-core@sha256:fecc574acadbd8eccf0e596d7085f67ccf96afd5d99189c8d3dae385ef83ebe8
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -1059,7 +1059,7 @@ spec:
             command:
             - bash
             - -ec
-            - pg_isready -U "$(POSTGRESQL_USER)"
+            - pg_isready -U "$POSTGRESQL_USER"
           failureThreshold: 6
           initialDelaySeconds: 30
           periodSeconds: 10
