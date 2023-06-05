@@ -341,7 +341,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: ghcr.io/diwise/context-broker@sha256:a1697f2b2c37535db372a14b879c155fbc4f59603907f5c11c99ae3a2898542e
+        image: ghcr.io/diwise/context-broker@sha256:a09af0b021af47cc98851b478985d77536728c99ea9b6c6d5d4dca403a0f5110
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -478,7 +478,7 @@ spec:
           value: http://iot-device-mgmt
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-core@sha256:acc3b87e8fab5d11717aaad8009e379dc62cdb15493305e10ff233a00f86dd92
+        image: ghcr.io/diwise/iot-core@sha256:fecc574acadbd8eccf0e596d7085f67ccf96afd5d99189c8d3dae385ef83ebe8
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -1059,7 +1059,7 @@ spec:
             command:
             - bash
             - -ec
-            - pg_isready -U "$(POSTGRESQL_USER)"
+            - pg_isready -U "$POSTGRESQL_USER"
           failureThreshold: 6
           initialDelaySeconds: 30
           periodSeconds: 10
