@@ -49,12 +49,13 @@ services:
       retries: 60
       start_period: 10s
 
-
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-05daa09be171b69977bd8354c3c9bf43b43a4e2e'
+    image: 'ghcr.io/diwise/iot-core:prod-03d129886c44cf9e536519cb20be4ef471f3aeba'
     restart: always
     depends_on:
       iot-device-mgmt:
+        condition: service_healthy
+      timescale:
         condition: service_healthy
     environment:
       RABBITMQ_HOST: 'rabbitmq'
@@ -62,6 +63,12 @@ services:
       OAUTH2_TOKEN_URL: 'http://keycloak:8080/realms/diwise-local/protocol/openid-connect/token'
       OAUTH2_CLIENT_ID: 'diwise-devmgmt-api'
       OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
+      POSTGRES_USER: 'orion'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRES_HOST: 'timescale'
+      POSTGRES_PORT: '5432'
+      POSTGRES_DBNAME: 'orion'
+      POSTGRES_SSLMODE: 'disable'
     volumes:
       - ./configs/diwise/functions.csv:/opt/diwise/config/functions.csv
     ports:
@@ -80,7 +87,7 @@ services:
       keycloak:
         condition: service_healthy
       rabbitmq:
-        condition: service_healthy
+        condition: service_healthy          
     environment:
       RABBITMQ_HOST: 'rabbitmq'
     volumes:
@@ -111,7 +118,6 @@ services:
       interval: 3s
       timeout: 2s
       retries: 10
-
 
   iot-transform-fiware:
     image: 'ghcr.io/diwise/iot-transform-fiware:prod-4526154cc11e0a0366e65fc6a61392d374306102'
@@ -148,7 +154,6 @@ services:
       retries: 60
       start_period: 10s
 
-
   rabbitmq:
     image: 'bitnami/rabbitmq:3.11'
     #image: 'arm64v8/rabbitmq:3.11'
@@ -172,7 +177,6 @@ services:
       retries: 60
       start_period: 20s
 
-
   context-broker:
     image: 'ghcr.io/diwise/context-broker:prod-05bfe58ce82d8f1ca7f1b93ac0d2ceed50f4fbaf'
     restart: always
@@ -183,7 +187,7 @@ services:
         condition: service_healthy
       orion-ld:
         condition: service_healthy
-      mintaka-svc:
+      mintaka:
         condition: service_healthy
     volumes:
       - ./configs/diwise/context-broker.yaml:/opt/diwise/config/default.yaml
@@ -197,9 +201,8 @@ services:
       retries: 30
       start_period: 5s
 
-
   orion-ld:
-    image: 'quay.io/fiware/orion-ld@sha256:a65adbface4d5467add735d01c7204951e3c474ef8fc901fbd3a2af285beafea'
+    image: 'quay.io/fiware/orion-ld@sha256:cd8a03c04da8a9ce1f711e648bbc0180bc8cefb1a24561ad078b16c03542ba6f'
     restart: always
     command: [ '-experimental', '-logLevel', 'DEBUG' ]
     environment:
@@ -208,7 +211,7 @@ services:
       ORIONLD_MONGO_PASSWORD: 'password'
       ORIONLD_TROE: 'TRUE'
       ORIONLD_TROE_USER: 'orion'
-      ORIONLD_TROE_PWD: 'orion'
+      ORIONLD_TROE_PWD: 'password'
       ORIONLD_TROE_HOST: 'timescale'
       ORIONLD_LOG_FOR_HUMANS: 'TRUE'
       ORIONLD_DISABLE_FILE_LOG: 'TRUE'
@@ -226,9 +229,8 @@ services:
       retries: 150
       start_period: 30s
 
-
-  mintaka-svc:
-    image: fiware/mintaka:0.5.36
+  mintaka:
+    image: fiware/mintaka:0.5.37
     restart: always
     depends_on:
       timescale:
@@ -236,9 +238,10 @@ services:
     environment:
       DATASOURCES_DEFAULT_HOST: 'timescale'
       DATASOURCES_DEFAULT_USERNAME: 'orion'
-      DATASOURCES_DEFAULT_PASSWORD: 'orion'
+      DATASOURCES_DEFAULT_PASSWORD: 'password'
       DATASOURCES_DEFAULT_DATABSE: 'orion'
       LOGGERS_LEVELS_ROOT: 'INFO'
+      BASEPATH: '/ngsi-ld/v1'
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
       interval: 2s
@@ -248,25 +251,8 @@ services:
     ports:
       - "8080"
 
-
-  mintaka:
-    image: 'registry.access.redhat.com/ubi8/nginx-120'
-    command:
-      - nginx
-      - -g
-      - daemon off;
-    restart: always
-    depends_on:
-      mintaka-svc:
-        condition: service_healthy
-    volumes:
-      - ./configs/proxy/nginx-mintaka.conf:/etc/nginx/nginx.conf
-    ports:
-      - "8080"
-
-
   timescale:
-    image: timescaledev/timescaledb-ha:pg14-multi-all
+    image: timescale/timescaledb-ha:pg14-latest
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U orion" ]
@@ -274,13 +260,12 @@ services:
       timeout: 5s
       retries: 12
       start_period: 10s
-    environment:
+    environment:      
       POSTGRES_USER: 'orion'
-      POSTGRES_PASSWORD: 'orion'
+      POSTGRES_PASSWORD: 'password'
       POSTGRES_HOST_AUTH_METHOD: 'trust'
     ports:
       - "5432"
-
 
   mongodb:
     image: mongo:5
@@ -298,25 +283,6 @@ services:
     command: --nojournal --quiet
     volumes:
       - mongo-db:/data
-
-
-  mongo-express:
-    image: mongo-express
-    restart: always
-    environment:
-      ME_CONFIG_MONGODB_SERVER: 'mongodb'
-      ME_CONFIG_MONGODB_PORT: 27017
-      ME_CONFIG_MONGODB_ENABLE_ADMIN: 'true'
-      ME_CONFIG_MONGODB_AUTH_DATABASE: 'admin'
-      ME_CONFIG_MONGODB_ADMINUSERNAME: 'admin'
-      ME_CONFIG_MONGODB_ADMINPASSWORD: 'password'
-      ME_CONFIG_BASICAUTH_USERNAME: ''
-    depends_on:
-      orion-ld:
-        condition: service_healthy
-    ports:
-      - '8183:8081'
-
 
   keycloak:
     image: quay.io/keycloak/keycloak:20.0
@@ -350,9 +316,8 @@ services:
       retries: 36
       start_period: 10s
 
-
   grafana:
-    image: grafana/grafana:9.3.13
+    image: grafana/grafana:9.3.14
     command: [ '--config', '/usr/share/grafana/custom.ini' ]
     environment:
       GF_SERVER_DOMAIN: diwise.local
