@@ -26,7 +26,7 @@ services:
       - '8444:444'
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-26914f3bb72cb2ebdb51e354a442bfe3d1439c85'
+    image: 'ghcr.io/diwise/iot-agent:prod-5fd80c4f6b3ff82e8ec5092e3ea47169eae4745e'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -50,7 +50,7 @@ services:
       start_period: 10s
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-03d129886c44cf9e536519cb20be4ef471f3aeba'
+    image: 'ghcr.io/diwise/iot-core:prod-205c1aefa9a7fe399401bfe51a26452d9d3401f2'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -120,7 +120,7 @@ services:
       retries: 10
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-4526154cc11e0a0366e65fc6a61392d374306102'
+    image: 'ghcr.io/diwise/iot-transform-fiware:prod-e3f379e6b16cee95e3170d44ecd8eb580fb38b24'
     restart: always
     depends_on:
       rabbitmq:
@@ -178,7 +178,7 @@ services:
       start_period: 20s
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-05bfe58ce82d8f1ca7f1b93ac0d2ceed50f4fbaf'
+    image: 'ghcr.io/diwise/context-broker:prod-465bf47ff8b293686ac9b60b2da4765627789ee8'
     restart: always
     environment:
       CONTEXT_BROKER_CLIENT_DEBUG: 'true'
