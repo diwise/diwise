@@ -48,6 +48,8 @@ services:
       timeout: 5s
       retries: 60
       start_period: 10s
+    volumes:
+      - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
 
   iot-core:
     image: 'ghcr.io/diwise/iot-core:prod-205c1aefa9a7fe399401bfe51a26452d9d3401f2'
