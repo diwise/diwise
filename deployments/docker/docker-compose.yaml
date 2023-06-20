@@ -26,7 +26,7 @@ services:
       - '8444:444'
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-5fd80c4f6b3ff82e8ec5092e3ea47169eae4745e'
+    image: 'ghcr.io/diwise/iot-agent:prod-7d4ceb65c80356c6bedd0edca059a77f3e897e23'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -52,7 +52,7 @@ services:
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-205c1aefa9a7fe399401bfe51a26452d9d3401f2'
+    image: 'ghcr.io/diwise/iot-core:prod-02bcf458a851225e51e5d4747866ab78d8930c86'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -83,7 +83,7 @@ services:
       start_period: 10s
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-3b5ee6a4efc5b22fdaf7d0794ce1afe0235a7190'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-9e32f1d210335126c53bdba30eae6b54212f8cf0'
     restart: always
     depends_on:
       keycloak:
@@ -106,7 +106,7 @@ services:
       start_period: 10s
 
   iot-device-mgmt-web:
-    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-4eeb621cc711a318efdb84fa6f8b0525e1ed8400'
+    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-68a69fd8dfb97b1b2bab4326207ed611ef37c3af'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -122,7 +122,7 @@ services:
       retries: 10
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-e3f379e6b16cee95e3170d44ecd8eb580fb38b24'
+    image: 'ghcr.io/diwise/iot-transform-fiware:prod-2a6473362a6922de3c54766e1f5756f9af6d9855'
     restart: always
     depends_on:
       rabbitmq:
@@ -134,7 +134,7 @@ services:
       RABBITMQ_HOST: 'rabbitmq'
 
   iot-events:
-    image: 'ghcr.io/diwise/iot-events:prod-23a0590502dbd08109054abc9e92877b24f40bc7'
+    image: 'ghcr.io/diwise/iot-events:prod-a32215933ebc88c7025798f10c719878794d64fb'
     restart: always
     depends_on:
       keycloak:
@@ -156,31 +156,8 @@ services:
       retries: 60
       start_period: 10s
 
-  rabbitmq:
-    image: 'bitnami/rabbitmq:3.11'
-    #image: 'arm64v8/rabbitmq:3.11'
-    environment:
-      RABBITMQ_DEFAULT_USER: 'user'
-      RABBITMQ_DEFAULT_PASS: 'bitnami'
-    ports:
-      - '4369'
-      - '5672'
-      - '25672'
-      - '15672'
-      - '15692'
-    volumes:
-      - 'rabbitmq_data:/bitnami'
-      - './configs/rabbitmq/enabled_plugins:/opt/bitnami/rabbitmq/etc/rabbitmq/enabled_plugins'
-      - './configs/rabbitmq/rabbitmq.conf:/opt/bitnami/rabbitmq/etc/rabbitmq/rabbitmq.conf'
-    healthcheck:
-      test: rabbitmq-diagnostics -q ping
-      interval: 2s
-      timeout: 2s
-      retries: 60
-      start_period: 20s
-
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-465bf47ff8b293686ac9b60b2da4765627789ee8'
+    image: 'ghcr.io/diwise/context-broker:prod-8b3ba8919d349eed528282366e57a050696f1f1d'
     restart: always
     environment:
       CONTEXT_BROKER_CLIENT_DEBUG: 'true'
@@ -286,6 +263,29 @@ services:
     volumes:
       - mongo-db:/data
 
+  rabbitmq:
+    image: 'bitnami/rabbitmq:3.11'
+    #image: 'arm64v8/rabbitmq:3.11'
+    environment:
+      RABBITMQ_DEFAULT_USER: 'user'
+      RABBITMQ_DEFAULT_PASS: 'bitnami'
+    ports:
+      - '4369'
+      - '5672'
+      - '25672'
+      - '15672'
+      - '15692'
+    volumes:
+      - 'rabbitmq_data:/bitnami'
+      - './configs/rabbitmq/enabled_plugins:/opt/bitnami/rabbitmq/etc/rabbitmq/enabled_plugins'
+      - './configs/rabbitmq/rabbitmq.conf:/opt/bitnami/rabbitmq/etc/rabbitmq/rabbitmq.conf'
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 2s
+      timeout: 2s
+      retries: 60
+      start_period: 20s
+
   keycloak:
     image: quay.io/keycloak/keycloak:20.0
     command:
@@ -345,7 +345,6 @@ services:
       timeout: 2s
       retries: 30
       start_period: 5s
-
 
 volumes:
   rabbitmq_data:
