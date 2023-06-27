@@ -40,6 +40,12 @@ services:
       OAUTH2_CLIENT_ID: 'diwise-devmgmt-api'
       OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
       APPSERVER_FACADE: 'chirpstack'
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRES_HOST: 'timescale'
+      POSTGRES_PORT: '5432'
+      POSTGRES_DBNAME: 'orion'
+      POSTGRES_SSLMODE: 'disable'
     ports:
       - '8080'
     healthcheck:
@@ -65,7 +71,7 @@ services:
       OAUTH2_TOKEN_URL: 'http://keycloak:8080/realms/diwise-local/protocol/openid-connect/token'
       OAUTH2_CLIENT_ID: 'diwise-devmgmt-api'
       OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
-      POSTGRES_USER: 'orion'
+      POSTGRES_USER: 'postgres'
       POSTGRES_PASSWORD: 'password'
       POSTGRES_HOST: 'timescale'
       POSTGRES_PORT: '5432'
@@ -189,7 +195,7 @@ services:
       ORIONLD_MONGO_USER: 'admin'
       ORIONLD_MONGO_PASSWORD: 'password'
       ORIONLD_TROE: 'TRUE'
-      ORIONLD_TROE_USER: 'orion'
+      ORIONLD_TROE_USER: 'postgres'
       ORIONLD_TROE_PWD: 'password'
       ORIONLD_TROE_HOST: 'timescale'
       ORIONLD_LOG_FOR_HUMANS: 'TRUE'
@@ -216,9 +222,9 @@ services:
         condition: service_healthy
     environment:
       DATASOURCES_DEFAULT_HOST: 'timescale'
-      DATASOURCES_DEFAULT_USERNAME: 'orion'
+      DATASOURCES_DEFAULT_USERNAME: 'postgres'
       DATASOURCES_DEFAULT_PASSWORD: 'password'
-      DATASOURCES_DEFAULT_DATABSE: 'orion'
+      DATASOURCES_DEFAULT_DATABASE: 'orion'
       LOGGERS_LEVELS_ROOT: 'INFO'
       BASEPATH: '/ngsi-ld/v1'
     healthcheck:
@@ -234,13 +240,12 @@ services:
     image: timescale/timescaledb-ha:pg14-latest
     restart: always
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U orion" ]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
       timeout: 5s
       retries: 12
       start_period: 10s
-    environment:      
-      POSTGRES_USER: 'orion'
+    environment:
       POSTGRES_PASSWORD: 'password'
       POSTGRES_HOST_AUTH_METHOD: 'trust'
     ports:
