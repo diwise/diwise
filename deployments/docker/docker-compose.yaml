@@ -112,7 +112,7 @@ services:
       start_period: 10s
 
   iot-device-mgmt-web:
-    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-5488f7d228602b05fb2c321a829e27cc9bdd389d'
+    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-02b7c7211d92ebe10517330785e920f8377ee29f'
     restart: always
     depends_on:
       iot-device-mgmt:
