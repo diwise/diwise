@@ -92,7 +92,7 @@ services:
 
 
   otel-collector:
-    image: 'otel/opentelemetry-collector:0.69.0'
+    image: 'otel/opentelemetry-collector:0.83.0'
     command: '--config /etc/otel-config.yaml'
     depends_on:
       iot-device-mgmt:
@@ -112,7 +112,7 @@ services:
 
 
   tempo:
-    image: grafana/tempo:1.5.0
+    image: grafana/tempo:2.2.0
     command: [ '-config.file=/etc/tempo.yaml' ]
     volumes:
       - ./configs/tempo/tempo-local.yaml:/etc/tempo.yaml
@@ -126,7 +126,7 @@ services:
 
 
   loki:
-    image: grafana/loki:2.7.1
+    image: grafana/loki:2.8.4
     ports:
       - '3100'
     command: [ '-config.file=/etc/loki/local-config.yaml' ]
@@ -138,7 +138,7 @@ services:
   
 
   mimir:
-    image: grafana/mimir:2.6.0
+    image: grafana/mimir:2.9.0
     command: [ '--config.file=/etc/mimir/compose.yaml' ]
     volumes:
       - ./configs/mimir/config.yaml:/etc/mimir/compose.yaml

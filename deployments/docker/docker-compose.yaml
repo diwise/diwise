@@ -26,7 +26,7 @@ services:
       - '8444:444'
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-c81600ca3b7d1d433ae5698b590721cdbf06d60d'
+    image: 'ghcr.io/diwise/iot-agent:prod-e0ced5968edb0e04f0dca07e982210643f57881a'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -58,7 +58,7 @@ services:
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-48788de2f7b33e1c6eeed0b2e6992cbb52361a13'
+    image: 'ghcr.io/diwise/iot-core:prod-06d6fe0c01978e60fd89f114dae400adf6f6cb65'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -89,7 +89,7 @@ services:
       start_period: 10s
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-ef2faf300ddb4aaef7c7e51205d3f22704b61bcc'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-00543f8d56ae17cd33898bb522fb1b3cd4a72bc9'
     restart: always
     depends_on:
       keycloak:
@@ -112,7 +112,7 @@ services:
       start_period: 10s
 
   iot-device-mgmt-web:
-    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-02b7c7211d92ebe10517330785e920f8377ee29f'
+    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-9ba799bfb54618f90fac9a64645fa517995d4785'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -128,7 +128,7 @@ services:
       retries: 10
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-6ee1ce7b0ab53ec0f0259a989d741d9dcff9c9e2'
+    image: 'ghcr.io/diwise/iot-transform-fiware:prod-14f5ad8fed9462719ee4a757688105a9df2ff13a'
     restart: always
     depends_on:
       rabbitmq:
@@ -140,7 +140,7 @@ services:
       RABBITMQ_HOST: 'rabbitmq'
 
   iot-events:
-    image: 'ghcr.io/diwise/iot-events:prod-2a4db7c1d2713bd6d36b0395771e9b146a217793'
+    image: 'ghcr.io/diwise/iot-events:prod-3e3cdc99340ee1e9b7eba387398a69013f732e7c'
     restart: always
     depends_on:
       keycloak:
@@ -163,7 +163,7 @@ services:
       start_period: 10s
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-8b3ba8919d349eed528282366e57a050696f1f1d'
+    image: 'ghcr.io/diwise/context-broker:prod-944127350ef23d58d84803231394712cc0682428'
     restart: always
     environment:
       CONTEXT_BROKER_CLIENT_DEBUG: 'true'
@@ -215,7 +215,7 @@ services:
       start_period: 30s
 
   mintaka:
-    image: fiware/mintaka:0.5.37
+    image: fiware/mintaka:0.5.40
     restart: always
     depends_on:
       timescale:
@@ -324,7 +324,7 @@ services:
       start_period: 10s
 
   grafana:
-    image: grafana/grafana:9.3.14
+    image: grafana/grafana:9.4.13
     command: [ '--config', '/usr/share/grafana/custom.ini' ]
     environment:
       GF_SERVER_DOMAIN: diwise.local
