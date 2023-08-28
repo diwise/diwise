@@ -550,7 +550,7 @@ spec:
               resource: limits.memory
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-device-mgmt@sha256:30f0bcbc308b24f3d26a96e60d4d40a1a3c25500d2cf5142d8146b916e445cf1
+        image: ghcr.io/diwise/iot-device-mgmt@sha256:e89cf92357642eccb5312eab8b1d5c85fbb893e0202a042ed3fb21fc14ca998b
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -1061,15 +1061,20 @@ spec:
     spec:
       containers:
       - env:
-        - name: POSTGRESQL_USER
+        - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
               key: superuser
               name: authn-timescale
-        - name: POSTGRESQL_PASSWORD
+        - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               key: superpass
+              name: authn-timescale
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              key: database
               name: authn-timescale
         - name: POSTGRES_HOST_AUTH_METHOD
           value: trust
@@ -1079,7 +1084,7 @@ spec:
             command:
             - bash
             - -ec
-            - pg_isready -U "$POSTGRESQL_USER"
+            - pg_isready -U "$POSTGRES_USER"
           failureThreshold: 6
           initialDelaySeconds: 30
           periodSeconds: 10
