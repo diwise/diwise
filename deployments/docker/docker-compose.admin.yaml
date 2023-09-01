@@ -2,7 +2,7 @@ version: '3'
 services:
   
   pgadmin:
-    image: dpage/pgadmin4:7.5
+    image: dpage/pgadmin4:7.6
     restart: always
     ports:
       - "5050:80"
