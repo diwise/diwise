@@ -26,7 +26,7 @@ services:
       - '8444:444'
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-e0ced5968edb0e04f0dca07e982210643f57881a'
+    image: 'ghcr.io/diwise/iot-agent:prod-0f25149d92e1a9f0fea90247e0b46298cc12bded'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -89,7 +89,7 @@ services:
       start_period: 10s
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-00543f8d56ae17cd33898bb522fb1b3cd4a72bc9'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-4265ef1f1bd193f28d05c397c0f764025f4daebd'
     restart: always
     depends_on:
       keycloak:
@@ -140,7 +140,7 @@ services:
       RABBITMQ_HOST: 'rabbitmq'
 
   iot-events:
-    image: 'ghcr.io/diwise/iot-events:prod-3e3cdc99340ee1e9b7eba387398a69013f732e7c'
+    image: 'ghcr.io/diwise/iot-events:prod-6dfd587dea02a8f4fe13c452e41ab9e4d5d8595f'
     restart: always
     depends_on:
       keycloak:
