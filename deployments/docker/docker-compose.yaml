@@ -26,7 +26,7 @@ services:
       - '8444:444'
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-0f25149d92e1a9f0fea90247e0b46298cc12bded'
+    image: 'ghcr.io/diwise/iot-agent:prod-fe3bd751991952fc7df429a1b4f47f23ed4d7d06'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -58,7 +58,7 @@ services:
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-06d6fe0c01978e60fd89f114dae400adf6f6cb65'
+    image: 'ghcr.io/diwise/iot-core:prod-e1d1aa6155198afbece99722abe768292b18c747'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -128,7 +128,7 @@ services:
       retries: 10
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-14f5ad8fed9462719ee4a757688105a9df2ff13a'
+    image: 'ghcr.io/diwise/iot-transform-fiware:prod-b41a1b59a63800f3842edf22a1f4395552b25721'
     restart: always
     depends_on:
       rabbitmq:
@@ -140,7 +140,7 @@ services:
       RABBITMQ_HOST: 'rabbitmq'
 
   iot-events:
-    image: 'ghcr.io/diwise/iot-events:prod-6dfd587dea02a8f4fe13c452e41ab9e4d5d8595f'
+    image: 'ghcr.io/diwise/iot-events:prod-456779c62cc5d7eaa905ad04699db6569a645abc'
     restart: always
     depends_on:
       keycloak:
@@ -324,7 +324,7 @@ services:
       start_period: 10s
 
   grafana:
-    image: grafana/grafana:10.0.5
+    image: grafana/grafana:10.1.1
     command: [ '--config', '/usr/share/grafana/custom.ini' ]
     environment:
       GF_SERVER_DOMAIN: diwise.local
