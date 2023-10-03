@@ -2,7 +2,7 @@ version: '3'
 services:
 
   proxy:
-    image: 'registry.access.redhat.com/ubi8/nginx-120'
+    image: 'registry.access.redhat.com/ubi9/nginx-122'
     command:
       - nginx
       - -g
