@@ -209,9 +209,9 @@ services:
       - '1026'
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:1026/ngsi-ld/v1/types" ]
-      interval: 2s
+      interval: 10s
       timeout: 5s
-      retries: 150
+      retries: 30
       start_period: 30s
 
   mintaka:
@@ -324,7 +324,7 @@ services:
       start_period: 10s
 
   grafana:
-    image: grafana/grafana:10.1.1
+    image: grafana/grafana:10.1.4
     command: [ '--config', '/usr/share/grafana/custom.ini' ]
     environment:
       GF_SERVER_DOMAIN: diwise.local
