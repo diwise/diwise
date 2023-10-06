@@ -3,6 +3,7 @@ apiVersion: 1
 datasources:
   - name: Tempo
     type: tempo
+    uid: d66d50db-59d4-4d6b-b8ff-4013dff06858
     access: proxy
     url: http://tempo:3200
     jsonData:
@@ -13,15 +14,17 @@ datasources:
  #       datasourceUid: 'prometheus'
   - name: Loki
     type: loki
+    uid: e5fd6aa6-9ad8-4f9e-8bba-a5accdaa27b7
     access: proxy
     url: http://loki:3100
     jsonData:
       derivedFields:
       - datasourceName: Tempo
-        datasourceUid: tempo
+        datasourceUid: d66d50db-59d4-4d6b-b8ff-4013dff06858
         matcherRegex: '"traceID":\s?"(\w+)'
         name: TraceID
         url: $${__value.raw}
   - name: Mimir
     type: prometheus
     url: http://mimir:9009/prometheus
+    uid: d76085e4-68ae-45b5-a875-c93f4ed89389

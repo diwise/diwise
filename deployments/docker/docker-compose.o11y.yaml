@@ -172,6 +172,8 @@ services:
         condition: service_healthy
     volumes:
       - ./configs/diwise/fluent-bit/fluent-bit.conf:/opt/bitnami/fluent-bit/conf/fluent-bit.conf
+      - ./configs/diwise/fluent-bit/log-filter.lua:/opt/bitnami/fluent-bit/conf/log-filter.lua
+      - ./configs/diwise/fluent-bit/json.lua:/usr/local/share/lua/5.1/json.lua
     ports:
       - '2020:2020'
       - '24224:24224'
