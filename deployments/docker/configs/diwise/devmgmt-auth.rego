@@ -17,6 +17,16 @@ allow = response {
 allow = response {
 	is_valid_token
 
+	input.method == "POST"
+	pathstart := array.slice(input.path, 0, 3)
+	pathstart == ["api", "v0", "devices"]
+
+	response := {"tenants": token.payload.tenants}
+}
+
+allow = response {
+	is_valid_token
+
 	input.method == "PATCH"
 	pathstart := array.slice(input.path, 0, 3)
 	pathstart == ["api", "v0", "alarms"]
