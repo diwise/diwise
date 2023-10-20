@@ -58,7 +58,7 @@ services:
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-dc54e797d5e9fd4cf045df69c5d1c734509bb0b5'
+    image: 'ghcr.io/diwise/iot-core:prod-701c529d5da529027e1b1bddc6f57fb8db4f01ed'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -89,7 +89,7 @@ services:
       start_period: 10s
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-857ddf82a956ac0ca30190eb559d787b11a7c875'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-a1d9632a2e48a627aa6b141ccfdc758c3081e3c1'
     restart: always
     depends_on:
       keycloak:
