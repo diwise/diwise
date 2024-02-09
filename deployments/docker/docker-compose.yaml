@@ -26,7 +26,7 @@ services:
       - '8444:444'
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-45a03a3a6c017c75a0b8920b445352755ea7861e'
+    image: 'ghcr.io/diwise/iot-agent:prod-8c71cb19c6724d6855f9c973fe1f5e563f1e2f93'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -58,7 +58,7 @@ services:
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-701c529d5da529027e1b1bddc6f57fb8db4f01ed'
+    image: 'ghcr.io/diwise/iot-core:prod-a9b7623f1d76d3867643966029901c2b4fa5fc8d'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -89,7 +89,7 @@ services:
       start_period: 10s
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-a1d9632a2e48a627aa6b141ccfdc758c3081e3c1'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-22302c74e598e966a409d84f12d79fd9e7982871'
     restart: always
     depends_on:
       keycloak:
@@ -112,7 +112,7 @@ services:
       start_period: 10s
 
   iot-device-mgmt-web:
-    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-9ba799bfb54618f90fac9a64645fa517995d4785'
+    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-efdcf6dbdb4f52cf1530e3b535476cd0e9888384'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -128,7 +128,7 @@ services:
       retries: 10
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-331d927cf3567a436c157446a65aa9c08afa7c37'
+    image: 'ghcr.io/diwise/iot-transform-fiware:prod-a7bb0ac13862ecc7e14223f7ced7a5c2c5e255f4'
     restart: always
     depends_on:
       rabbitmq:
@@ -163,7 +163,7 @@ services:
       start_period: 10s
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-817bb2b70b70d1127c19a2071977928385cf1cbf'
+    image: 'ghcr.io/diwise/context-broker:prod-70f669b23eb880338807b8419f8fc5060fdbd0f3'
     restart: always
     environment:
       CONTEXT_BROKER_CLIENT_DEBUG: 'true'
@@ -215,7 +215,7 @@ services:
       start_period: 30s
 
   mintaka:
-    image: fiware/mintaka:0.5.40
+    image: fiware/mintaka:0.5.41
     restart: always
     depends_on:
       timescale:
@@ -324,7 +324,7 @@ services:
       start_period: 10s
 
   grafana:
-    image: grafana/grafana:10.1.4
+    image: grafana/grafana:10.1.6
     command: [ '--config', '/usr/share/grafana/custom.ini' ]
     environment:
       GF_SERVER_DOMAIN: diwise.local
