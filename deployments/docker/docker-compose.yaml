@@ -162,6 +162,35 @@ services:
       retries: 60
       start_period: 10s
 
+  iot-things:
+    image: 'ghcr.io/diwise/iot-things:prod-998e70fed69c66e79307f2716d1cfb93b50fc120'
+    restart: always
+    depends_on:
+      keycloak:
+        condition:
+          service_healthy
+      timescale:
+        condition:
+          service_healthy
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRES_HOST: 'timescale'
+      POSTGRES_PORT: '5432'
+      POSTGRES_DBNAME: 'orion'
+      POSTGRES_SSLMODE: 'disable'
+    volumes:
+      - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
+      - ./configs/diwise/things.csv:/opt/diwise/config/things.csv
+    ports:
+      - '8080'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 60
+      start_period: 10s
+
   context-broker:
     image: 'ghcr.io/diwise/context-broker:prod-70f669b23eb880338807b8419f8fc5060fdbd0f3'
     restart: always
