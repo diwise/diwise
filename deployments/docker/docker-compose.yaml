@@ -31,6 +31,8 @@ services:
     depends_on:
       iot-device-mgmt:
         condition: service_healthy
+      timescale:
+        condition: service_healthy
     environment:
       MQTT_DISABLED: 'true'
       RABBITMQ_HOST: 'rabbitmq'
@@ -95,9 +97,17 @@ services:
       keycloak:
         condition: service_healthy
       rabbitmq:
-        condition: service_healthy          
+        condition: service_healthy      
+      timescale:
+        condition: service_healthy
     environment:
       RABBITMQ_HOST: 'rabbitmq'
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRES_HOST: 'timescale'
+      POSTGRES_PORT: '5432'
+      POSTGRES_DBNAME: 'orion'
+      POSTGRES_SSLMODE: 'disable'      
     volumes:
       - ./configs/diwise/data/devices.csv:/opt/diwise/config/devices.csv
       - ./configs/diwise/data/alarms.csv:/opt/diwise/config/alarms.csv
@@ -180,13 +190,44 @@ services:
       POSTGRES_DBNAME: 'orion'
       POSTGRES_SSLMODE: 'disable'
     volumes:
-      - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
+      - ./configs/diwise/iot-things-auth.rego:/opt/diwise/config/authz.rego
       - ./configs/diwise/things.csv:/opt/diwise/config/things.csv
     ports:
       - '8080'
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
       interval: 10s
+      timeout: 5s
+      retries: 60
+      start_period: 10s
+
+  cip-functions:
+    image: 'ghcr.io/diwise/cip-functions:prod-7072161452c66bbe20c3df2651a35be2ba55da48'
+    restart: always
+    depends_on:
+      timescale:
+        condition: service_healthy
+      iot-core:
+        condition: service_healthy          
+      iot-things:
+        condition: service_healthy
+    environment:
+      RABBITMQ_HOST: 'rabbitmq'
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRES_HOST: 'timescale'
+      POSTGRES_PORT: '5432'
+      POSTGRES_DBNAME: 'orion'
+      POSTGRES_SSLMODE: 'disable'
+      OAUTH2_TOKEN_URL: 'http://keycloak:8080/realms/diwise-local/protocol/openid-connect/token'
+      OAUTH2_CLIENT_ID: 'diwise-devmgmt-api'
+      OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
+      THINGS_URL: 'http://iot-things:8080'
+    ports:
+          - '8080'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 2s
       timeout: 5s
       retries: 60
       start_period: 10s
