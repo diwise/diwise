@@ -8,6 +8,8 @@ resources:
   - ssh://git@github.com/diwise/iot-device-mgmt-web-config?depth=1
   - ssh://git@github.com/diwise/iot-transform-fiware-config?depth=1
   - ssh://git@github.com/diwise/iot-events-config?depth=1
+  - ssh://git@github.com/diwise/iot-things-config?depth=1
+  - ssh://git@github.com/diwise/cip-functions-config?depth=1
 
 transformers:
   - global-labels.yaml
