@@ -18,10 +18,10 @@ metadata:
   name: orion-ld
 spec:
   ports:
-  - name: default-port
-    port: 80
-    protocol: TCP
-    targetPort: 1026
+    - name: default-port
+      port: 80
+      protocol: TCP
+      targetPort: 1026
   selector:
     app.kubernetes.io/name: orion-ld
   type: ClusterIP
@@ -49,50 +49,59 @@ spec:
         app.kubernetes.io/name: orion-ld
     spec:
       containers:
-      - env:
-        - name: POD_NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
-        - name: ORIONLD_MONGO_HOST
-          value: mongodb
-        - name: ORIONLD_MONGO_USER
-          valueFrom:
-            secretKeyRef:
-              key: username
-              name: authn-mongodb
-        - name: ORIONLD_MONGO_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              key: password
-              name: authn-mongodb
-        - name: ORIONLD_DISABLE_FILE_LOG
-          value: 'TRUE'
-        command: ["orionld", "-fg", "-multiservice", "-ngsiv1Autocast", "-experimental", "-logLevel", "DEBUG"]
-        image: quay.io/fiware/orion-ld@sha256:a65adbface4d5467add735d01c7204951e3c474ef8fc901fbd3a2af285beafea
-        imagePullPolicy: IfNotPresent
-        livenessProbe:
-          httpGet:
-            path: /ngsi-ld/v1/types
-            port: default-port
-          timeoutSeconds: 5
-        name: orion-ld
-        ports:
-        - containerPort: 1026
-          name: default-port
-          protocol: TCP
-        resources:
-          limits:
-            cpu: 1
-            memory: 2Gi
-          requests:
-            cpu: 500m
-            memory: 250Mi
-        startupProbe:
-          failureThreshold: 6
-          httpGet:
-            path: /ngsi-ld/v1/types
-            port: default-port
-          periodSeconds: 10
-          timeoutSeconds: 5
+        - env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: ORIONLD_MONGO_HOST
+              value: mongodb
+            - name: ORIONLD_MONGO_USER
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: authn-mongodb
+            - name: ORIONLD_MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: authn-mongodb
+            - name: ORIONLD_DISABLE_FILE_LOG
+              value: "TRUE"
+          command:
+            [
+              "orionld",
+              "-fg",
+              "-multiservice",
+              "-ngsiv1Autocast",
+              "-experimental",
+              "-logLevel",
+              "DEBUG",
+            ]
+          image: quay.io/fiware/orion-ld@sha256:d1c2b50ba47046c2dd0bcd786970469e21d6998b08ad09b56da8fb17cd267ef6
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            httpGet:
+              path: /ngsi-ld/v1/types
+              port: default-port
+            timeoutSeconds: 5
+          name: orion-ld
+          ports:
+            - containerPort: 1026
+              name: default-port
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 1
+              memory: 2Gi
+            requests:
+              cpu: 500m
+              memory: 250Mi
+          startupProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /ngsi-ld/v1/types
+              port: default-port
+            periodSeconds: 10
+            timeoutSeconds: 5
       serviceAccountName: orion-ld

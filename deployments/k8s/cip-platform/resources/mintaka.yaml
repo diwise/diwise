@@ -17,10 +17,10 @@ metadata:
   name: mintaka
 spec:
   ports:
-  - name: default-port
-    port: 80
-    protocol: TCP
-    targetPort: 8080
+    - name: default-port
+      port: 80
+      protocol: TCP
+      targetPort: 8080
   selector:
     app.kubernetes.io/name: mintaka
   type: ClusterIP
@@ -46,42 +46,42 @@ spec:
         app.kubernetes.io/name: mintaka
     spec:
       containers:
-      - env:
-        - name: BASEPATH
-          value: '/ngsi-ld/v1'
-        - name: DATASOURCES_DEFAULT_HOST
-          value: 'timescale'
-        - name: DATASOURCES_DEFAULT_USERNAME
-          valueFrom:
-            secretKeyRef:
-              key: username
-              name: authn-timescale
-        - name: DATASOURCES_DEFAULT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              key: password
-              name: authn-timescale
-        - name: DATASOURCES_DEFAULT_DATABASE
-          valueFrom:
-            secretKeyRef:
-              key: database
-              name: authn-timescale
-        - name: LOGGERS_LEVELS_ROOT
-          value: 'INFO'
-        image: fiware/mintaka:0.5.37
-        name: mintaka
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: default-port
-        startupProbe:
-          httpGet:
-            path: /health
-            port: default-port
-        ports:
-        - containerPort: 8080
-          name: default-port
-          protocol: TCP
-        resources: {}
+        - env:
+            - name: BASEPATH
+              value: "/ngsi-ld/v1"
+            - name: DATASOURCES_DEFAULT_HOST
+              value: "timescale"
+            - name: DATASOURCES_DEFAULT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: authn-timescale
+            - name: DATASOURCES_DEFAULT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: authn-timescale
+            - name: DATASOURCES_DEFAULT_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  key: database
+                  name: authn-timescale
+            - name: LOGGERS_LEVELS_ROOT
+              value: "INFO"
+          image: fiware/mintaka:0.6.6
+          name: mintaka
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: default-port
+          startupProbe:
+            httpGet:
+              path: /health
+              port: default-port
+          ports:
+            - containerPort: 8080
+              name: default-port
+              protocol: TCP
+          resources: {}
       serviceAccountName: mintaka
 status: {}
