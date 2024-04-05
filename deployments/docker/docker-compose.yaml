@@ -295,8 +295,9 @@ services:
       DATASOURCES_DEFAULT_USERNAME: 'postgres'
       DATASOURCES_DEFAULT_PASSWORD: 'password'
       DATASOURCES_DEFAULT_DATABASE: 'orion'
-      LOGGERS_LEVELS_ROOT: 'INFO'
       BASEPATH: '/ngsi-ld/v1'
+    volumes:
+      - './configs/diwise/mintaka-logging.xml:/app/resources/logback.xml'
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
       interval: 2s
