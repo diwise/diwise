@@ -202,7 +202,7 @@ services:
       start_period: 10s
 
   cip-functions:
-    image: 'ghcr.io/diwise/cip-functions:prod-b3b1eebb038cd4bdc54a0d6ad363da6e0884dd06'
+    image: 'ghcr.io/diwise/cip-functions:prod-eea4854622ba23eee176ca8fccaf729a796f543e'
     restart: always
     depends_on:
       timescale:
