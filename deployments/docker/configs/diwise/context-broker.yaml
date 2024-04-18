@@ -2,29 +2,35 @@ tenants:
   - id: default
     name: Default
     contextSources:
-    - endpoint: http://orion-ld:1026
-      temporal:
-        enabled: true
-        endpoint: http://mintaka:8080
-      information:
-      - entities:
-        - idPattern: ^urn:ngsi-ld:AirQualityObserved:.+
-          type: AirQualityObserved
-        - idPattern: ^urn:ngsi-ld:WaterQualityObserved:.+
-          type: WaterQualityObserved
-        - idPattern: ^urn:ngsi-ld:WeatherObserved:.+
-          type: WeatherObserved
-        - idPattern: ^urn:ngsi-ld:Beach:.+
-          type: Beach
-        - idPattern: ^urn:ngsi-ld:Lifebuoy:.+
-          type: Lifebuoy
-        - idPattern: ^urn:ngsi-ld:Device:.+
-          type: Device
-        - idPattern: ^urn:ngsi-ld:ExerciseTrail:.+
-          type: ExerciseTrail
-        - idPattern: ^urn:ngsi-ld:IndoorEnvironmentObserved:.+
-          type: IndoorEnvironmentObserved
-        - idPattern: ^urn:ngsi-ld:WaterConsumptionObserved:.+
-          type: WaterConsumptionObserved
-        - idPattern: ^urn:ngsi-ld:GreenspaceRecord:.+
-          type: GreenspaceRecord          
+      - endpoint: http://orion-ld:1026
+        temporal:
+          enabled: true
+          endpoint: http://mintaka:8080
+        information:
+          - entities:
+              - idPattern: ^urn:ngsi-ld:AirQualityObserved:.+
+                type: AirQualityObserved
+              - idPattern: ^urn:ngsi-ld:WaterQualityObserved:.+
+                type: WaterQualityObserved
+              - idPattern: ^urn:ngsi-ld:WeatherObserved:.+
+                type: WeatherObserved
+              - idPattern: ^urn:ngsi-ld:Beach:.+
+                type: Beach
+              - idPattern: ^urn:ngsi-ld:Lifebuoy:.+
+                type: Lifebuoy
+              - idPattern: ^urn:ngsi-ld:Device:.+
+                type: Device
+              - idPattern: ^urn:ngsi-ld:ExerciseTrail:.+
+                type: ExerciseTrail
+              - idPattern: ^urn:ngsi-ld:IndoorEnvironmentObserved:.+
+                type: IndoorEnvironmentObserved
+              - idPattern: ^urn:ngsi-ld:WaterConsumptionObserved:.+
+                type: WaterConsumptionObserved
+              - idPattern: ^urn:ngsi-ld:GreenspaceRecord:.+
+                type: GreenspaceRecord
+              - idPattern: ^urn:ngsi-ld:SewagePumpingStation:.+
+                type: SewagePumpingStation
+              - idPattern: ^urn:ngsi-ld:WasteContainer:.+
+                type: WasteContainer
+              - idPattern: ^urn:ngsi-ld:CombinedSewageOverflow:.+
+                type: CombinedSewageOverflow
