@@ -26,7 +26,7 @@ services:
       - '8444:444'
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-ca81b9d927ae654d27ffade9353c0d8dfafe92ef'
+    image: 'ghcr.io/diwise/iot-agent:prod-7f123bb23bc6df13d7f3516534a5853b9da25f9a'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -60,7 +60,7 @@ services:
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-fe49e123586e0d86a476f99e5378a9e2edf47ad2'
+    image: 'ghcr.io/diwise/iot-core:prod-2cbedc7dfd6301d8a2c432ef410676d5941da8b6'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -91,7 +91,7 @@ services:
       start_period: 10s
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-22302c74e598e966a409d84f12d79fd9e7982871'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-905d515dbfdf7ce9feb8e1cc0ad52571a83b3a37'
     restart: always
     depends_on:
       keycloak:
@@ -138,7 +138,7 @@ services:
       retries: 10
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-82a5ce394b4516479678d9d4807b78838bc87ef2'
+    image: 'ghcr.io/diwise/iot-transform-fiware:prod-390005766f0bb771d2e4646e2fb68fbb9847c477'
     restart: always
     depends_on:
       rabbitmq:
@@ -202,7 +202,7 @@ services:
       start_period: 10s
 
   cip-functions:
-    image: 'ghcr.io/diwise/cip-functions:prod-eea4854622ba23eee176ca8fccaf729a796f543e'
+    image: 'ghcr.io/diwise/cip-functions:prod-3802a8524828b8e3fe090ff8c4f62f8235a4ce65'
     restart: always
     depends_on:
       timescale:
@@ -233,7 +233,7 @@ services:
       start_period: 10s
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-b33b7983372cdaaeabc496b34102a3f2868ed5eb'
+    image: 'ghcr.io/diwise/context-broker:prod-511ef9a43796ed342e6f05cdfb33058e5beea43e'
     restart: always
     environment:
       CONTEXT_BROKER_CLIENT_DEBUG: 'true'
@@ -341,7 +341,6 @@ services:
 
   rabbitmq:
     image: 'bitnami/rabbitmq:3.11'
-    #image: 'arm64v8/rabbitmq:3.11'
     environment:
       RABBITMQ_DEFAULT_USER: 'user'
       RABBITMQ_DEFAULT_PASS: 'bitnami'
