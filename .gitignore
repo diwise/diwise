@@ -20,5 +20,6 @@
 *.override.yaml
 *.test.csv
 *.test.js
+*.test.json
 
 /**/test/

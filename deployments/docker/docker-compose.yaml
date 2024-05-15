@@ -26,7 +26,7 @@ services:
       - '8444:444'
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-218d6a74ad648fafa8fdddb16aa38ed1f6f526f4'
+    image: 'ghcr.io/diwise/iot-agent:prod-098ebe40b2346bfc419069f60bd8e8858f5d657f'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -60,7 +60,7 @@ services:
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-2cbedc7dfd6301d8a2c432ef410676d5941da8b6'
+    image: 'ghcr.io/diwise/iot-core:prod-ecaa7ed8f0ecbd714b8db2914ed5ab69ac244be4'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -202,7 +202,7 @@ services:
       start_period: 10s
 
   cip-functions:
-    image: 'ghcr.io/diwise/cip-functions:prod-3802a8524828b8e3fe090ff8c4f62f8235a4ce65'
+    image: 'ghcr.io/diwise/cip-functions:prod-59ead5a55e51cd7228bb576675abe787173e7100'
     restart: always
     depends_on:
       timescale:
