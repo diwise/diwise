@@ -565,7 +565,7 @@ spec:
             secretKeyRef:
               key: client-secret
               name: authn-oauth2-par
-        image: ghcr.io/diwise/disie-web@sha256:1975eb8f5f775b1803f978662c800f5cb11b89f56b583199fe5c1c1c735440ef
+        image: ghcr.io/diwise/diwise-web@sha256:1975eb8f5f775b1803f978662c800f5cb11b89f56b583199fe5c1c1c735440ef
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
