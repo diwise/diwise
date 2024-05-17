@@ -173,7 +173,7 @@ services:
       start_period: 10s
 
   iot-things:
-    image: 'ghcr.io/diwise/iot-things:prod-cc5f2853f803a0de84feb3d20b6c2fe4df0d1de1'
+    image: 'ghcr.io/diwise/iot-things:prod-b30b1cbc5581ba09b84bd8b94b27ce220e2d614d'
     restart: always
     depends_on:
       keycloak:
