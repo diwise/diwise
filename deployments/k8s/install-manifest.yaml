@@ -3,9 +3,29 @@ automountServiceAccountToken: true
 kind: ServiceAccount
 metadata:
   labels:
+    app.kubernetes.io/name: cip-functions
+    app.kubernetes.io/part-of: iot-platform
+  name: cip-functions
+  namespace: diwise
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
     app.kubernetes.io/name: context-broker
     app.kubernetes.io/part-of: cip-platform
   name: context-broker
+  namespace: diwise
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: diwise-web
+    app.kubernetes.io/part-of: iot-platform
+  name: diwise-web
   namespace: diwise
 ---
 apiVersion: v1
@@ -56,6 +76,16 @@ metadata:
     app.kubernetes.io/name: iot-events
     app.kubernetes.io/part-of: iot-platform
   name: iot-events
+  namespace: diwise
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: iot-things
+    app.kubernetes.io/part-of: iot-platform
+  name: iot-things
   namespace: diwise
 ---
 apiVersion: v1
@@ -114,6 +144,24 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
+    app.kubernetes.io/name: cip-functions
+    app.kubernetes.io/part-of: iot-platform
+  name: cip-functions
+  namespace: diwise
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: cip-functions
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
     app.kubernetes.io/name: context-broker
     app.kubernetes.io/part-of: cip-platform
   name: context-broker
@@ -126,6 +174,24 @@ spec:
     targetPort: 8080
   selector:
     app.kubernetes.io/name: context-broker
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: diwise-web
+    app.kubernetes.io/part-of: iot-platform
+  name: diwise-web
+  namespace: diwise
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: diwise-web
   type: ClusterIP
 ---
 apiVersion: v1
@@ -216,6 +282,24 @@ spec:
     targetPort: 8080
   selector:
     app.kubernetes.io/name: iot-events
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: iot-things
+    app.kubernetes.io/part-of: iot-platform
+  name: iot-things
+  namespace: diwise
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: iot-things
   type: ClusterIP
 ---
 apiVersion: v1
@@ -317,6 +401,71 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
+    app.kubernetes.io/name: cip-functions
+    app.kubernetes.io/part-of: iot-platform
+  name: cip-functions
+  namespace: diwise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cip-functions
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cip-functions
+    spec:
+      containers:
+      - env:
+        - name: GOMEMLIMIT
+          valueFrom:
+            resourceFieldRef:
+              containerName: cip-functions
+              resource: limits.memory
+        - name: RABBITMQ_HOST
+          value: rabbitmq
+        - name: THINGS_URL
+          value: http://iot-things
+        image: ghcr.io/diwise/cip-functions@sha256:7ec251be5e66bf9469c2711881f955335d186872720e1c75a40721a306ff9135
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: default-port
+        name: cip-functions
+        ports:
+        - containerPort: 8080
+          name: default-port
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 50m
+            memory: 100Mi
+        startupProbe:
+          httpGet:
+            path: /health
+            port: default-port
+        volumeMounts:
+        - mountPath: /opt/diwise/config
+          name: conf-volume
+          readOnly: true
+      serviceAccountName: cip-functions
+      volumes:
+      - configMap:
+          name: cip-functions-cfg-cm
+        name: conf-volume
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
     app.kubernetes.io/name: context-broker
     app.kubernetes.io/part-of: cip-platform
   name: context-broker
@@ -341,7 +490,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: ghcr.io/diwise/context-broker@sha256:fcb45f120e7251905f1414f76554ed9152fe488cbc51f00111ee3153b5678652
+        image: ghcr.io/diwise/context-broker@sha256:7e664609f6c4f6ff2ff9a3a4fd403b5baa7e71b1783cab7a3b99f43232971e88
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -372,6 +521,73 @@ spec:
       - configMap:
           name: context-broker-config-cm
         name: context-broker-cfg
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: diwise-web
+    app.kubernetes.io/part-of: iot-platform
+  name: diwise-web
+  namespace: diwise
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: diwise-web
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: diwise-web
+    spec:
+      containers:
+      - env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: OAUTH2_REALM_URL
+          valueFrom:
+            secretKeyRef:
+              key: realm-url
+              name: authn-oauth2-par
+        - name: OAUTH2_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              key: client-id
+              name: authn-oauth2-par
+        - name: OAUTH2_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: client-secret
+              name: authn-oauth2-par
+        image: ghcr.io/diwise/disie-web@sha256:1975eb8f5f775b1803f978662c800f5cb11b89f56b583199fe5c1c1c735440ef
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: default-port
+        name: diwise-web
+        ports:
+        - containerPort: 8080
+          name: default-port
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 250m
+            memory: 250Mi
+          requests:
+            cpu: 50m
+            memory: 100Mi
+        startupProbe:
+          httpGet:
+            path: /health
+            port: default-port
+      serviceAccountName: diwise-web
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -427,7 +643,7 @@ spec:
           value: http://iot-agent/api/v0/messages
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-agent@sha256:52d7022b3679d154ea18f9d688254ab2ac5ff54822587a6d4e17be0a294ea6f2
+        image: ghcr.io/diwise/iot-agent@sha256:7059d5be06f0e3b69dce0be803ee7547116a4a110575cc1687aa7a099a0729fb
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -449,7 +665,14 @@ spec:
           httpGet:
             path: /health
             port: default-port
+        volumeMounts:
+        - mountPath: /opt/diwise/config
+          name: conf-volume
       serviceAccountName: iot-agent
+      volumes:
+      - configMap:
+          name: iot-agent-cfg-cm
+        name: conf-volume
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -488,7 +711,7 @@ spec:
           value: http://iot-device-mgmt
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-core@sha256:992db7f2f315b580ed3b03884d16e87e41f0e999fc5a6e0db891cf857c61217a
+        image: ghcr.io/diwise/iot-core@sha256:77f1baf169135ef8ab31c7b8bc76e2e7d24bdad7d9e0c021bf59283f1fcd97f0
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -550,7 +773,7 @@ spec:
               resource: limits.memory
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-device-mgmt@sha256:e89cf92357642eccb5312eab8b1d5c85fbb893e0202a042ed3fb21fc14ca998b
+        image: ghcr.io/diwise/iot-device-mgmt@sha256:69a807cea0ca971341990ef5d146e8ed0d490f965afaf272bb029bf4bf1ef95f
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -605,7 +828,7 @@ spec:
         app.kubernetes.io/name: iot-device-mgmt-web
     spec:
       containers:
-      - image: ghcr.io/diwise/iot-device-mgmt-web@sha256:5031e2c1781cf4b9d1d78a1bd0e08d538484960babe96008b7aba0f621a043ef
+      - image: ghcr.io/diwise/iot-device-mgmt-web@sha256:3a7d8960e54dcc20c925ea653e689ea9244585c39c7dd5045764aa6d21e7dc73
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -667,7 +890,7 @@ spec:
               resource: limits.memory
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-events@sha256:4efbd686c912ab694636ff5233791036a607f54d9f3f4e94f9c5ede6ee556742
+        image: ghcr.io/diwise/iot-events@sha256:594b8788b0e1c326c2fb2c6457e82a9f00d5446a94469cec8f44a577e89cdb02
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -703,6 +926,69 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
+    app.kubernetes.io/name: iot-things
+    app.kubernetes.io/part-of: iot-platform
+  name: iot-things
+  namespace: diwise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: iot-things
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: iot-things
+    spec:
+      containers:
+      - env:
+        - name: GOMEMLIMIT
+          valueFrom:
+            resourceFieldRef:
+              containerName: iot-things
+              resource: limits.memory
+        - name: RABBITMQ_HOST
+          value: rabbitmq
+        image: ghcr.io/diwise/iot-things@sha256:fa13f40fac0f14e1e8b5e8ffd700e45c18b4219a3cc94b9f351e3bc51c5609ff
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: default-port
+        name: iot-things
+        ports:
+        - containerPort: 8080
+          name: default-port
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 50m
+            memory: 100Mi
+        startupProbe:
+          httpGet:
+            path: /health
+            port: default-port
+        volumeMounts:
+        - mountPath: /opt/diwise/config
+          name: conf-volume
+          readOnly: true
+      serviceAccountName: iot-things
+      volumes:
+      - configMap:
+          name: iot-things-cfg-cm
+        name: conf-volume
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
     app.kubernetes.io/name: iot-transform-fiware
     app.kubernetes.io/part-of: iot-platform
   name: iot-transform-fiware
@@ -731,7 +1017,7 @@ spec:
           value: http://context-broker
         - name: RABBITMQ_HOST
           value: rabbitmq
-        image: ghcr.io/diwise/iot-transform-fiware@sha256:03c3a59a691f93b42bbc9f35eea79f3aca7f983863f6d6e57f79e935ab9a9fbc
+        image: ghcr.io/diwise/iot-transform-fiware@sha256:87eb8364aeba826c10488f768a9bd6e78eb8cf55a9d0181166713b6eb1ad3504
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -800,7 +1086,7 @@ spec:
               name: authn-timescale
         - name: LOGGERS_LEVELS_ROOT
           value: INFO
-        image: fiware/mintaka:0.5.37
+        image: fiware/mintaka:0.6.6
         livenessProbe:
           httpGet:
             path: /health
@@ -1009,7 +1295,7 @@ spec:
               name: authn-mongodb
         - name: ORIONLD_DISABLE_FILE_LOG
           value: "TRUE"
-        image: quay.io/fiware/orion-ld@sha256:a65adbface4d5467add735d01c7204951e3c474ef8fc901fbd3a2af285beafea
+        image: quay.io/fiware/orion-ld@sha256:d1c2b50ba47046c2dd0bcd786970469e21d6998b08ad09b56da8fb17cd267ef6
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -1098,3 +1384,49 @@ spec:
         resources: {}
       serviceAccountName: timescale
 status: {}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    app.kubernetes.io/name: context-broker
+    app.kubernetes.io/part-of: cip-platform
+  name: troe-cleaner
+  namespace: diwise
+spec:
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    metadata:
+      labels:
+        app.kubernetes.io/name: context-broker
+    spec:
+      template:
+        metadata:
+          annotations:
+            sidecar.istio.io/inject: "false"
+          labels:
+            app.kubernetes.io/name: context-broker
+        spec:
+          containers:
+          - args: []
+            command:
+            - /opt/diwise/troe-cleaner
+            env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            image: ghcr.io/diwise/context-broker@sha256:16aaf1c4789e6eb1adbb48c4555a9b04f8bd294d01b8d8edcc36eacc4826f41f
+            imagePullPolicy: IfNotPresent
+            name: troe-cleaner
+            resources:
+              limits:
+                cpu: 100m
+                memory: 250Mi
+              requests:
+                cpu: 50m
+                memory: 100Mi
+          restartPolicy: Never
+          serviceAccountName: context-broker
+  schedule: 0 0 * * *
+  successfulJobsHistoryLimit: 1
