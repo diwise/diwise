@@ -26,7 +26,7 @@ services:
       - '8444:444'
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-098ebe40b2346bfc419069f60bd8e8858f5d657f'
+    image: 'ghcr.io/diwise/iot-agent:prod-edb1a23d265bbdc7ba0d9c5b1eb6d097fc4fe675'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -60,7 +60,7 @@ services:
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-ecaa7ed8f0ecbd714b8db2914ed5ab69ac244be4'
+    image: 'ghcr.io/diwise/iot-core:prod-9a6c4822ec5e9ade15e9a3b8e6f765a3d0c0453a'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -91,7 +91,7 @@ services:
       start_period: 10s
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-905d515dbfdf7ce9feb8e1cc0ad52571a83b3a37'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-1ca8fc8c78dfb404a14e9b6d2814152df445b1c8'
     restart: always
     depends_on:
       keycloak:
@@ -138,7 +138,7 @@ services:
       retries: 10
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-390005766f0bb771d2e4646e2fb68fbb9847c477'
+    image: 'ghcr.io/diwise/iot-transform-fiware:prod-cc919aa25d271747295b370c62dfdb5227916b64'
     restart: always
     depends_on:
       rabbitmq:
@@ -233,7 +233,7 @@ services:
       start_period: 10s
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-942b086517acdb80f86a3000d25b7c26d8f9a063'
+    image: 'ghcr.io/diwise/context-broker:prod-7cde1939552a78509a7fa0b22fc92378a3c231a8'
     restart: always
     environment:
       CONTEXT_BROKER_CLIENT_DEBUG: 'true'
