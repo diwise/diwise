@@ -60,7 +60,7 @@ services:
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-9a6c4822ec5e9ade15e9a3b8e6f765a3d0c0453a'
+    image: 'ghcr.io/diwise/iot-core:prod-b8053d9e2e591d2f08fd4bd32bd51054842e86a8'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -110,7 +110,6 @@ services:
       POSTGRES_SSLMODE: 'disable'      
     volumes:
       - ./configs/diwise/data/devices.csv:/opt/diwise/config/devices.csv
-      - ./configs/diwise/data/alarms.csv:/opt/diwise/config/alarms.csv
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
     ports:
       - '8080'
@@ -138,7 +137,7 @@ services:
       retries: 10
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-cc919aa25d271747295b370c62dfdb5227916b64'
+    image: 'ghcr.io/diwise/iot-transform-fiware:prod-72e1850d9125e4098b268342efccbc44ae579a46'
     restart: always
     depends_on:
       rabbitmq:
@@ -202,7 +201,7 @@ services:
       start_period: 10s
 
   cip-functions:
-    image: 'ghcr.io/diwise/cip-functions:prod-59ead5a55e51cd7228bb576675abe787173e7100'
+    image: 'ghcr.io/diwise/cip-functions:prod-b950371e4b7800491bb688c546d7b4da0aa54c48'
     restart: always
     depends_on:
       timescale:
