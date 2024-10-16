@@ -68,7 +68,7 @@ spec:
                   name: authn-timescale
             - name: LOGGERS_LEVELS_ROOT
               value: "INFO"
-          image: fiware/mintaka:0.6.6
+          image: fiware/mintaka:0.6.18
           name: mintaka
           livenessProbe:
             httpGet:

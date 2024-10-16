@@ -121,7 +121,7 @@ metadata:
     app.kubernetes.io/part-of: cip-platform
   name: mongo-express
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app.kubernetes.io/name: mongo-express

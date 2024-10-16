@@ -998,7 +998,7 @@ spec:
               name: authn-timescale
         - name: LOGGERS_LEVELS_ROOT
           value: INFO
-        image: fiware/mintaka:0.6.6
+        image: fiware/mintaka:0.6.18
         livenessProbe:
           httpGet:
             path: /health
@@ -1026,7 +1026,7 @@ metadata:
   name: mongo-express
   namespace: diwise
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app.kubernetes.io/name: mongo-express
