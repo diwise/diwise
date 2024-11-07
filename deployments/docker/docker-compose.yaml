@@ -13,8 +13,8 @@ services:
         condition: service_healthy
       grafana:
         condition: service_healthy
-#      iot-device-mgmt-web:
-#        condition: service_healthy
+      #      iot-device-mgmt-web:
+      #        condition: service_healthy
       iot-device-mgmt:
         condition: service_healthy
       iot-events:
@@ -62,7 +62,7 @@ services:
       timeout: 5s
       retries: 60
       start_period: 10s
-  
+
   iot-core:
     image: 'ghcr.io/diwise/iot-core:prod-323a53852bb523aaa6e542d24fc2127ba2320da7'
     restart: always
@@ -101,7 +101,7 @@ services:
       keycloak:
         condition: service_healthy
       rabbitmq:
-        condition: service_healthy      
+        condition: service_healthy
       timescale:
         condition: service_healthy
     environment:
@@ -111,7 +111,7 @@ services:
       POSTGRES_HOST: 'timescale'
       POSTGRES_PORT: '5432'
       POSTGRES_DBNAME: 'orion'
-      POSTGRES_SSLMODE: 'disable'      
+      POSTGRES_SSLMODE: 'disable'
     volumes:
       - ./configs/diwise/data/devices.csv:/opt/diwise/config/devices.csv
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
@@ -124,21 +124,21 @@ services:
       retries: 60
       start_period: 10s
 
-#  iot-device-mgmt-web:
-#    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-c097f0f24951380b7f2d4d26d3976b9e30a5bae9'
-#    restart: always
-#    depends_on:
-#      iot-device-mgmt:
-#        condition: service_healthy
-#    volumes:
-#      - ./configs/diwise/devmgmtweb-kc.json:/opt/app-root/src/device-management/config/keycloak.json
-#    ports:
-#      - '8080'
-#    healthcheck:
-#      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
-#      interval: 3s
-#      timeout: 2s
-#      retries: 10
+  #  iot-device-mgmt-web:
+  #    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-c097f0f24951380b7f2d4d26d3976b9e30a5bae9'
+  #    restart: always
+  #    depends_on:
+  #      iot-device-mgmt:
+  #        condition: service_healthy
+  #    volumes:
+  #      - ./configs/diwise/devmgmtweb-kc.json:/opt/app-root/src/device-management/config/keycloak.json
+  #    ports:
+  #      - '8080'
+  #    healthcheck:
+  #      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+  #      interval: 3s
+  #      timeout: 2s
+  #      retries: 10
 
   iot-transform-fiware:
     image: 'ghcr.io/diwise/iot-transform-fiware:prod-a4a54cd0ddf75b101646bc1aa2eacf352d11094c'
@@ -147,6 +147,8 @@ services:
       rabbitmq:
         condition: service_healthy
       context-broker:
+        condition: service_healthy
+      iot-things:
         condition: service_healthy
     environment:
       NGSI_CB_URL: 'http://context-broker:8080'
@@ -180,12 +182,13 @@ services:
     restart: always
     depends_on:
       keycloak:
-        condition:
-          service_healthy
+        condition: service_healthy
       timescale:
-        condition:
-          service_healthy
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
+      RABBITMQ_HOST: 'rabbitmq'
       POSTGRES_USER: 'postgres'
       POSTGRES_PASSWORD: 'password'
       POSTGRES_HOST: 'timescale'
@@ -204,36 +207,36 @@ services:
       retries: 60
       start_period: 10s
 
-  cip-functions:
-    image: 'ghcr.io/diwise/cip-functions:prod-a032855f85048c715456a43d7579bffa7da35c02'
-    restart: always
-    depends_on:
-      timescale:
-        condition: service_healthy
-      iot-core:
-        condition: service_healthy          
-      iot-things:
-        condition: service_healthy
-    environment:
-      RABBITMQ_HOST: 'rabbitmq'
-      POSTGRES_USER: 'postgres'
-      POSTGRES_PASSWORD: 'password'
-      POSTGRES_HOST: 'timescale'
-      POSTGRES_PORT: '5432'
-      POSTGRES_DBNAME: 'orion'
-      POSTGRES_SSLMODE: 'disable'
-      OAUTH2_TOKEN_URL: 'http://keycloak:8080/realms/diwise-local/protocol/openid-connect/token'
-      OAUTH2_CLIENT_ID: 'diwise-devmgmt-api'
-      OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
-      THINGS_URL: 'http://iot-things:8080'
-    ports:
-          - '8080'
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
-      interval: 2s
-      timeout: 5s
-      retries: 60
-      start_period: 10s
+  #cip-functions:
+  #  image: 'ghcr.io/diwise/cip-functions:prod-a032855f85048c715456a43d7579bffa7da35c02'
+  #  restart: always
+  #  depends_on:
+  #    timescale:
+  #      condition: service_healthy
+  #    iot-core:
+  #      condition: service_healthy
+  #    iot-things:
+  #      condition: service_healthy
+  #  environment:
+  #    RABBITMQ_HOST: 'rabbitmq'
+  #    POSTGRES_USER: 'postgres'
+  #    POSTGRES_PASSWORD: 'password'
+  #    POSTGRES_HOST: 'timescale'
+  #    POSTGRES_PORT: '5432'
+  #    POSTGRES_DBNAME: 'orion'
+  #    POSTGRES_SSLMODE: 'disable'
+  #    OAUTH2_TOKEN_URL: 'http://keycloak:8080/realms/diwise-local/protocol/openid-connect/token'
+  #    OAUTH2_CLIENT_ID: 'diwise-devmgmt-api'
+  #    OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
+  #    THINGS_URL: 'http://iot-things:8080'
+  #  ports:
+  #    - '8080'
+  #  healthcheck:
+  #    test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+  #    interval: 2s
+  #    timeout: 5s
+  #    retries: 60
+  #    start_period: 10s
 
   context-broker:
     image: 'ghcr.io/diwise/context-broker:prod-602165a8df814992bace851d26b27f838150f1a9'
@@ -328,7 +331,7 @@ services:
   mongodb:
     image: mongo:5
     healthcheck:
-      test: ["CMD-SHELL", "mongo", "--port", "27017", "-u", "admin", "-p", "password", "--eval", "\"db.adminCommand('ping')\""]
+      test: [ "CMD-SHELL", "mongo", "--port", "27017", "-u", "admin", "-p", "password", "--eval", "\"db.adminCommand('ping')\"" ]
       interval: 5s
       timeout: 1s
       retries: 12
@@ -384,13 +387,7 @@ services:
     volumes:
       - ./configs/keycloak/realm.json:/application-realm.json
     healthcheck:
-      test:
-        [
-          "CMD",
-          "curl",
-          "-f",
-          "http://localhost:8080/health/ready"
-        ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health/ready" ]
       interval: 5s
       timeout: 5s
       retries: 36
@@ -411,14 +408,7 @@ services:
     ports:
       - '3000'
     healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "-q",
-          "--spider",
-          "http://localhost:3000/api/health"
-        ]
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health" ]
       interval: 2s
       timeout: 2s
       retries: 30
