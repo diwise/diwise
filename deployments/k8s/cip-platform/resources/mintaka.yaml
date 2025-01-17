@@ -71,9 +71,14 @@ spec:
           image: fiware/mintaka:0.6.18
           name: mintaka
           livenessProbe:
+            failureThreshold: 3
             httpGet:
               path: /health
               port: default-port
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30
           startupProbe:
             httpGet:
               path: /health
