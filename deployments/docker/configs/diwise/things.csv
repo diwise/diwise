@@ -1,1 +1,1 @@
-thingId;thingType;location;relatedId;relatedType;location;tenant;
+id;type;subType;name;description;location;tenant;tags;refDevices;args
