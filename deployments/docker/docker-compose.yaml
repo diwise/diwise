@@ -32,7 +32,7 @@ services:
       - '8444:444'
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-3eba04cc958643cfb3e04e1f90ab357f658076ff'
+    image: 'ghcr.io/diwise/iot-agent:prod-e50fb582bb010f219b0c54c5dad3cc2ab27b862d'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -64,7 +64,7 @@ services:
       start_period: 10s
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-323a53852bb523aaa6e542d24fc2127ba2320da7'
+    image: 'ghcr.io/diwise/iot-core:prod-8d112053df32529d904581c140b58a099245b506'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -74,6 +74,7 @@ services:
     environment:
       RABBITMQ_HOST: 'rabbitmq'
       DEV_MGMT_URL: 'http://iot-device-mgmt:8080'
+      MEASUREMENTS_URL: "https://iot-device-mgmt:8080/measurements"
       OAUTH2_TOKEN_URL: 'http://keycloak:8080/realms/diwise-local/protocol/openid-connect/token'
       OAUTH2_CLIENT_ID: 'diwise-devmgmt-api'
       OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
@@ -95,7 +96,7 @@ services:
       start_period: 10s
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-d2506042a13f0219245f2f6d69aa00c8285c5fe9'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-a398a49dae68b50a8792d25c96ade8bcf1d3e429'
     restart: always
     depends_on:
       keycloak:
@@ -141,7 +142,7 @@ services:
   #      retries: 10
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-a4a54cd0ddf75b101646bc1aa2eacf352d11094c'
+    image: 'ghcr.io/diwise/iot-transform-fiware:prod-7e46c3ea45f03f27d969536c025fe216682281a1'
     restart: always
     depends_on:
       rabbitmq:
@@ -155,7 +156,7 @@ services:
       RABBITMQ_HOST: 'rabbitmq'
 
   iot-events:
-    image: 'ghcr.io/diwise/iot-events:prod-2a19579d433557e52c05bef79484025e3d1913e6'
+    image: 'ghcr.io/diwise/iot-events:prod-c9ea3b2ef441a5f5f790f5e5af2abcba454276db'
     restart: always
     depends_on:
       keycloak:
@@ -178,7 +179,7 @@ services:
       start_period: 10s
 
   iot-things:
-    image: 'ghcr.io/diwise/iot-things:prod-b30b1cbc5581ba09b84bd8b94b27ce220e2d614d'
+    image: 'ghcr.io/diwise/iot-things:prod-a526ad7ac0ad682f372dbfe38b802009a0f684d1'
     restart: always
     depends_on:
       keycloak:
@@ -198,6 +199,7 @@ services:
     volumes:
       - ./configs/diwise/iot-things-auth.rego:/opt/diwise/config/authz.rego
       - ./configs/diwise/things.csv:/opt/diwise/config/things.csv
+      - ./configs/diwise/config.yaml:/opt/diwise/config/config.yaml
     ports:
       - '8080'
     healthcheck:
@@ -207,39 +209,8 @@ services:
       retries: 60
       start_period: 10s
 
-  #cip-functions:
-  #  image: 'ghcr.io/diwise/cip-functions:prod-a032855f85048c715456a43d7579bffa7da35c02'
-  #  restart: always
-  #  depends_on:
-  #    timescale:
-  #      condition: service_healthy
-  #    iot-core:
-  #      condition: service_healthy
-  #    iot-things:
-  #      condition: service_healthy
-  #  environment:
-  #    RABBITMQ_HOST: 'rabbitmq'
-  #    POSTGRES_USER: 'postgres'
-  #    POSTGRES_PASSWORD: 'password'
-  #    POSTGRES_HOST: 'timescale'
-  #    POSTGRES_PORT: '5432'
-  #    POSTGRES_DBNAME: 'orion'
-  #    POSTGRES_SSLMODE: 'disable'
-  #    OAUTH2_TOKEN_URL: 'http://keycloak:8080/realms/diwise-local/protocol/openid-connect/token'
-  #    OAUTH2_CLIENT_ID: 'diwise-devmgmt-api'
-  #    OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
-  #    THINGS_URL: 'http://iot-things:8080'
-  #  ports:
-  #    - '8080'
-  #  healthcheck:
-  #    test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
-  #    interval: 2s
-  #    timeout: 5s
-  #    retries: 60
-  #    start_period: 10s
-
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-602165a8df814992bace851d26b27f838150f1a9'
+    image: 'ghcr.io/diwise/context-broker:prod-11504e0647bbe33be3f1eca3a61a2f6afdb328fc'
     restart: always
     environment:
       CONTEXT_BROKER_CLIENT_DEBUG: 'true'

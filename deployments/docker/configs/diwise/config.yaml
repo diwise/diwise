@@ -1,0 +1,17 @@
+types:
+  - type: "Building"
+  - type: "Container"
+    subTypes:
+      - "WasteContainer"
+      - "Sandstorage"
+  - type: "Lifebuoy"
+  - type: "Passage"
+  - type: "PointOfInterest"
+    subTypes:
+      - "Beach"    
+  - type: "Pumpingstation"
+  - type: "Room"
+  - type: "Sewer"
+    subTypes:
+      - "CombinedSewerOverflow"
+  - type: "Desk"
