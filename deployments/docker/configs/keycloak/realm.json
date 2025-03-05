@@ -86,7 +86,7 @@
         }
       ],
       "client": {
-        "diwise-devmgmt-web": [],
+        "diwise-frontend-par": [],
         "realm-management": [
           {
             "id": "49b16619-34d3-4b28-b3d6-97726a701d4d",
@@ -784,18 +784,19 @@
       },
       {
         "id": "9b8095cd-28bd-4fde-a371-bd59a3a06572",
-        "clientId": "diwise-devmgmt-web",
-        "name": "Frontend Client",
+        "clientId": "diwise-frontend-par",
+        "name": "Frontend PAR Client",
         "description": "",
         "rootUrl": "https://diwise.local:8443/",
         "adminUrl": "",
-        "baseUrl": "https://diwise.local:8443/device-management",
+        "baseUrl": "https://diwise.local:8443/",
         "surrogateAuthRequired": false,
         "enabled": true,
         "alwaysDisplayInConsole": false,
         "clientAuthenticatorType": "client-secret",
+        "secret": "615241704865544572616B61474E494B65504861574E7449744943655269654E",
         "redirectUris": [
-          "https://diwise.local:8443/device-management/*"
+          "https://diwise.local:8443/*"
         ],
         "webOrigins": [
           "*"
@@ -807,7 +808,7 @@
         "implicitFlowEnabled": false,
         "directAccessGrantsEnabled": true,
         "serviceAccountsEnabled": false,
-        "publicClient": true,
+        "publicClient": false,
         "frontchannelLogout": false,
         "protocol": "openid-connect",
         "attributes": {

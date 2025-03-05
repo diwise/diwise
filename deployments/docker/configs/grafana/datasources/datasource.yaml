@@ -17,13 +17,21 @@ datasources:
     uid: e5fd6aa6-9ad8-4f9e-8bba-a5accdaa27b7
     access: proxy
     url: http://loki:3100
-    jsonData:
-      derivedFields:
-      - datasourceName: Tempo
-        datasourceUid: d66d50db-59d4-4d6b-b8ff-4013dff06858
-        matcherRegex: '"traceID":\s?"(\w+)'
-        name: TraceID
-        url: $${__value.raw}
+    correlations:
+    - targetUID: d66d50db-59d4-4d6b-b8ff-4013dff06858
+      label: "Show Trace"
+      description: "Show traces related to this log in Tempo"
+      config:
+        type: "query"
+        target:
+          queryType: "traceId"
+          query: '$${traceID}'
+        field: Line
+        transformations:
+        - type: regex
+          field: labels
+          expression: '([0123456789abcdef]{32})'
+          mapValue: traceID
   - name: Mimir
     type: prometheus
     url: http://mimir:9009/prometheus
