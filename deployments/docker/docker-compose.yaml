@@ -59,7 +59,7 @@ services:
       start_period: 10s
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-e50fb582bb010f219b0c54c5dad3cc2ab27b862d'
+    image: 'ghcr.io/diwise/iot-agent:prod-975c9cd2e93fdff40948579f4790271086cfbefd'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -91,7 +91,7 @@ services:
       start_period: 10s
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-8d112053df32529d904581c140b58a099245b506'
+    image: 'ghcr.io/diwise/iot-core:prod-6a85b734f00bb41e1ededcce825a59fa325a3da4'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -123,7 +123,7 @@ services:
       start_period: 10s
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-a398a49dae68b50a8792d25c96ade8bcf1d3e429'
+    image: 'ghcr.io/diwise/iot-device-mgmt:prod-6ded75a38109494a4f23edbdb95b113c8f7de48f'
     restart: always
     depends_on:
       keycloak:
@@ -235,7 +235,7 @@ services:
       start_period: 10s
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-11504e0647bbe33be3f1eca3a61a2f6afdb328fc'
+    image: 'ghcr.io/diwise/context-broker:prod-9769f074c8b962ee0f02e9650c0869b2cabdc3f0'
     restart: always
     environment:
       CONTEXT_BROKER_CLIENT_DEBUG: 'true'
