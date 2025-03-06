@@ -64,7 +64,7 @@ services:
 
 
   otel-collector:
-    image: 'otel/opentelemetry-collector:0.120.0'
+    image: 'otel/opentelemetry-collector:0.121.0'
     command: '--config /etc/otel-config.yaml'
     depends_on:
       loki:
@@ -88,7 +88,7 @@ services:
 
 
   tempo:
-    image: docker.io/grafana/tempo:2.6.0
+    image: docker.io/grafana/tempo:2.7.1
     command: [ '-config.file=/etc/tempo.yaml' ]
     volumes:
       - ./configs/tempo/tempo-local.yaml:/etc/tempo.yaml
@@ -108,7 +108,7 @@ services:
 
 
   loki:
-    image: docker.io/grafana/loki:3.0.1
+    image: docker.io/grafana/loki:3.4.2
     ports:
       - '3100'
     command: [ '-config.file=/etc/loki/local-config.yaml' ]
@@ -120,7 +120,7 @@ services:
   
 
   mimir:
-    image: docker.io/grafana/mimir:2.13.0
+    image: docker.io/grafana/mimir:2.15.0
     command: [ '--config.file=/etc/mimir/compose.yaml' ]
     volumes:
       - ./configs/mimir/config.yaml:/etc/mimir/compose.yaml
