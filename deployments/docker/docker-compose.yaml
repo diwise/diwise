@@ -310,7 +310,7 @@ services:
       - "8080"
 
   timescale:
-    image: timescale/timescaledb-ha:pg14-latest
+    image: timescale/timescaledb-ha:pg17-ts2.18
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
