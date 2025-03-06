@@ -1,5 +1,11 @@
-version: '3'
 services:
+
+  diwise-web:
+    depends_on:
+      otel-collector:
+        condition: service_started
+    environment:
+      OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
 
   iot-agent:
     depends_on:
@@ -7,13 +13,6 @@ services:
         condition: service_started
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
-    logging:
-      driver: fluentd
-      options:
-#        fluentd-address: fluentbit:24224
-        fluentd-async: 'true'
-    links:
-      - fluentbit
 
 
   iot-core:
@@ -22,13 +21,6 @@ services:
         condition: service_started
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
-    logging:
-      driver: fluentd
-      options:
-#        fluentd-address: fluentbit:24224
-        fluentd-async: 'true'
-    links:
-      - fluentbit
 
 
   iot-device-mgmt:
@@ -37,13 +29,6 @@ services:
         condition: service_started
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
-    logging:
-      driver: fluentd
-      options:
-#        fluentd-address: fluentbit:24224
-        fluentd-async: 'true'
-    links:
-      - fluentbit
 
 
   iot-events:
@@ -52,13 +37,6 @@ services:
         condition: service_started
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
-    logging:
-      driver: fluentd
-      options:
-#        fluentd-address: fluentbit:24224
-        fluentd-async: 'true'
-    links:
-      - fluentbit
 
 
   iot-transform-fiware:
@@ -67,13 +45,6 @@ services:
         condition: service_started
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
-    logging:
-      driver: fluentd
-      options:
-#        fluentd-address: fluentbit:24224
-        fluentd-async: 'true'
-    links:
-      - fluentbit
 
 
   iot-things:
@@ -82,28 +53,6 @@ services:
         condition: service_started
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
-    logging:
-      driver: fluentd
-      options:
-#        fluentd-address: fluentbit:24224
-        fluentd-async: 'true'
-    links:
-      - fluentbit
-
-
-  cip-functions:
-    depends_on:
-      otel-collector:
-        condition: service_started
-    environment:
-      OTEL_EXPORTER_OTLP_ENDPOINT: 'http://otel-collector:4318'
-    logging:
-      driver: fluentd
-      options:
-#        fluentd-address: fluentbit:24224
-        fluentd-async: 'true'
-    links:
-      - fluentbit
 
 
   context-broker:
@@ -112,23 +61,16 @@ services:
     depends_on:
       otel-collector:
         condition: service_started
-    logging:
-      driver: fluentd
-      options:
-#        fluentd-address: fluentbit:24224
-        fluentd-async: 'true'
-    links:
-      - fluentbit
 
 
   otel-collector:
-    image: 'otel/opentelemetry-collector:0.86.0'
+    image: 'otel/opentelemetry-collector:0.121.0'
     command: '--config /etc/otel-config.yaml'
     depends_on:
       loki:
         condition: service_healthy
       mimir:
-        condition: service_healthy
+        condition: service_started
       tempo:
         condition: service_healthy
     volumes:
@@ -146,7 +88,7 @@ services:
 
 
   tempo:
-    image: grafana/tempo:2.2.3
+    image: docker.io/grafana/tempo:2.7.1
     command: [ '-config.file=/etc/tempo.yaml' ]
     volumes:
       - ./configs/tempo/tempo-local.yaml:/etc/tempo.yaml
@@ -166,7 +108,7 @@ services:
 
 
   loki:
-    image: grafana/loki:2.8.5
+    image: docker.io/grafana/loki:3.4.2
     ports:
       - '3100'
     command: [ '-config.file=/etc/loki/local-config.yaml' ]
@@ -178,39 +120,15 @@ services:
   
 
   mimir:
-    image: grafana/mimir:2.10.0
+    image: docker.io/grafana/mimir:2.15.0
     command: [ '--config.file=/etc/mimir/compose.yaml' ]
     volumes:
       - ./configs/mimir/config.yaml:/etc/mimir/compose.yaml
     ports:
       - '9009'
-    healthcheck:
-      test: wget -q --tries=1 -O- http://127.0.0.1:9009/ready|grep -q "ready"
-      interval: 2s
-      timeout: 5s
-      retries: 24
-      start_period: 10s
-
-
-  # We will be setting up fluent-bit as a docker logging driver to collect log output from the other containers and forward it to loki
-  # See https://kevcodez.de/posts/2019-08-10-fluent-bit-docker-logging-driver-elasticsearch/
-  fluentbit:
-    image: bitnami/fluent-bit:1.9.8
-    restart: always
-    depends_on:
-      loki:
-        condition: service_healthy
-    volumes:
-      - ./configs/diwise/fluent-bit/fluent-bit.conf:/opt/bitnami/fluent-bit/conf/fluent-bit.conf
-      - ./configs/diwise/fluent-bit/log-filter.lua:/opt/bitnami/fluent-bit/conf/log-filter.lua
-      - ./configs/diwise/fluent-bit/json.lua:/usr/local/share/lua/5.1/json.lua
-    ports:
-      - '2020:2020'
-      - '24224:24224'
-      - '24224:24224/udp'
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1:2020/api/v1/health"]
-      interval: 2s
-      timeout: 5s
-      retries: 24
-      start_period: 10s
+#    healthcheck:
+#      test: wget -q --tries=1 -O- http://mimir:9009/ready|grep -q "ready"
+#      interval: 2s
+#      timeout: 5s
+#      retries: 24
+#      start_period: 10s

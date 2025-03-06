@@ -2,7 +2,9 @@ receivers:
   otlp:
     protocols:
       grpc:
+        endpoint: 0.0.0.0:4317
       http:
+        endpoint: 0.0.0.0:4318
   
   prometheus:
     config:
@@ -20,12 +22,20 @@ processors:
   batch:
 
 exporters:
-  logging:
-    loglevel: info
+  debug:
+    verbosity: detailed
+
   otlp:
     endpoint: 'tempo:4317'
     tls:
       insecure: true
+
+  otlphttp/logs:
+    endpoint: http://loki:3100/otlp
+
+  otlphttp/metrics:
+    endpoint: http://mimir:9009/otlp
+
   prometheusremotewrite:
     endpoint: "http://mimir:9009/api/v1/push"
 
@@ -33,12 +43,23 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [otlp,logging]
+      exporters: [otlp]
 
-    metrics:
-      receivers: [otlp,prometheus]
+    logs:
+      receivers: [otlp]
       processors: [batch]
-      exporters: [prometheusremotewrite,logging]
+      exporters: [otlphttp/logs]
+
+    metrics/otlp:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/metrics]
+
+    metrics/prom:
+      receivers: [prometheus]
+      processors: [batch]
+      exporters: [prometheusremotewrite]
+
   telemetry:
     logs:
-      level: error
+      level: WARN

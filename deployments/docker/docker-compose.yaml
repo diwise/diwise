@@ -1,8 +1,7 @@
-version: '3'
 services:
 
   proxy:
-    image: 'registry.access.redhat.com/ubi9/nginx-122'
+    image: 'registry.access.redhat.com/ubi9/nginx-124'
     command:
       - nginx
       - -g
@@ -11,10 +10,10 @@ services:
     depends_on:
       context-broker:
         condition: service_healthy
+      diwise-web:
+        condition: service_started
       grafana:
         condition: service_healthy
-      #      iot-device-mgmt-web:
-      #        condition: service_healthy
       iot-device-mgmt:
         condition: service_healthy
       iot-events:
@@ -25,11 +24,39 @@ services:
       - ./configs/proxy/nginx.conf:/etc/nginx/nginx.conf
       - ./configs/proxy/openssl/server.crt:/etc/ssl/server.crt
       - ./configs/proxy/openssl/server.key:/etc/ssl/server.key
-      - ./configs/keycloak/openssl/server.pem:/etc/ssl/kc-server.crt
-      - ./configs/proxy/openssl/server.key:/etc/ssl/kc-server.key
     ports:
       - '8443:443'
       - '8444:444'
+
+  diwise-web:
+    image: 'ghcr.io/diwise/diwise-web:prod-3d5f60aed3cb59763716a68d8a9a9742fa4d704c'
+    restart: always
+    depends_on:
+      iot-device-mgmt:
+        condition: service_healthy
+    environment:
+      APP_ROOT: 'https://diwise.local:8443'
+      CONTENT_SECURITY_POLICY: 'report'
+      CONTROL_PORT: '8000'
+      DEV_MGMT_URL: 'http://iot-device-mgmt:8080/api/v0/devices'
+      MEASUREMENTS_URL: 'http://iot-events:8080/api/v0/measurements'
+      THINGS_URL: 'http://iot-things:8080/api/v0/things'
+      MSG_FWD_ENDPOINT: 'http://iot-agent:8080/api/v0/messages'
+      OAUTH2_REALM_URL: 'https://iam.diwise.local:8444/realms/diwise-local'
+      OAUTH2_REALM_INSECURE: 'true'
+      OAUTH2_CLIENT_ID: 'diwise-frontend-par'
+      OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
+    volumes:
+      - ./configs/diwise/etc-hosts.conf:/etc/hosts
+    ports:
+      - '8000'
+      - '8080'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/readyz" ]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
 
   iot-agent:
     image: 'ghcr.io/diwise/iot-agent:prod-e50fb582bb010f219b0c54c5dad3cc2ab27b862d'
@@ -125,22 +152,6 @@ services:
       retries: 60
       start_period: 10s
 
-  #  iot-device-mgmt-web:
-  #    image: 'ghcr.io/diwise/iot-device-mgmt-web:prod-c097f0f24951380b7f2d4d26d3976b9e30a5bae9'
-  #    restart: always
-  #    depends_on:
-  #      iot-device-mgmt:
-  #        condition: service_healthy
-  #    volumes:
-  #      - ./configs/diwise/devmgmtweb-kc.json:/opt/app-root/src/device-management/config/keycloak.json
-  #    ports:
-  #      - '8080'
-  #    healthcheck:
-  #      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
-  #      interval: 3s
-  #      timeout: 2s
-  #      retries: 10
-
   iot-transform-fiware:
     image: 'ghcr.io/diwise/iot-transform-fiware:prod-7e46c3ea45f03f27d969536c025fe216682281a1'
     restart: always
@@ -154,6 +165,12 @@ services:
     environment:
       NGSI_CB_URL: 'http://context-broker:8080'
       RABBITMQ_HOST: 'rabbitmq'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/readyz" ]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
 
   iot-events:
     image: 'ghcr.io/diwise/iot-events:prod-c9ea3b2ef441a5f5f790f5e5af2abcba454276db'
@@ -167,15 +184,23 @@ services:
         condition: service_healthy
     environment:
       RABBITMQ_HOST: 'rabbitmq'
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'password'
+      POSTGRES_HOST: 'timescale'
+      POSTGRES_PORT: '5432'
+      POSTGRES_DBNAME: 'orion'
+      POSTGRES_SSLMODE: 'disable'
     volumes:
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
+      - ./configs/diwise/iotevents-cloudevents.yaml:/opt/diwise/config/cloudevents.yaml
     ports:
       - '8080'
+      - '8000'
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/readyz" ]
       interval: 2s
       timeout: 5s
-      retries: 60
+      retries: 30
       start_period: 10s
 
   iot-things:
@@ -262,10 +287,10 @@ services:
       start_period: 30s
 
   mintaka:
-    image: fiware/mintaka:0.6.6
+    image: fiware/mintaka:0.7.0
     restart: always
     depends_on:
-      timescale:
+      orion-ld:
         condition: service_healthy
     environment:
       DATASOURCES_DEFAULT_HOST: 'timescale'
@@ -273,8 +298,8 @@ services:
       DATASOURCES_DEFAULT_PASSWORD: 'password'
       DATASOURCES_DEFAULT_DATABASE: 'orion'
       BASEPATH: '/ngsi-ld/v1'
-    volumes:
-      - './configs/diwise/mintaka-logging.xml:/app/resources/logback.xml'
+#    volumes:
+#      - './configs/diwise/mintaka-logging.xml:/app/resources/logback.xml'
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
       interval: 2s
@@ -365,7 +390,7 @@ services:
       start_period: 10s
 
   grafana:
-    image: grafana/grafana:10.1.6
+    image: grafana/grafana:11.5.2
     command: [ '--config', '/usr/share/grafana/custom.ini' ]
     environment:
       GF_SERVER_DOMAIN: diwise.local
