@@ -7,19 +7,6 @@ services:
       - -g
       - daemon off;
     restart: always
-    depends_on:
-      context-broker:
-        condition: service_healthy
-      diwise-web:
-        condition: service_started
-      grafana:
-        condition: service_healthy
-      iot-device-mgmt:
-        condition: service_healthy
-      iot-events:
-        condition: service_healthy
-      iot-things:
-        condition: service_healthy
     volumes:
       - ./configs/proxy/nginx.conf:/etc/nginx/nginx.conf
       - ./configs/proxy/openssl/server.crt:/etc/ssl/server.crt
@@ -59,7 +46,7 @@ services:
       start_period: 10s
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-975c9cd2e93fdff40948579f4790271086cfbefd'
+    image: 'ghcr.io/diwise/iot-agent:prod-81ec3796c00ef55c00c098b66aaacf43aacddf5b'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -70,8 +57,10 @@ services:
       MQTT_DISABLED: 'true'
       RABBITMQ_HOST: 'rabbitmq'
       DEV_MGMT_URL: 'http://iot-device-mgmt:8080'
+      DEVMGMT_CLIENT_DEBUG: 'true'
       MSG_FWD_ENDPOINT: 'http://iot-agent:8080/api/v0/messages'
-      OAUTH2_TOKEN_URL: 'http://keycloak:8080/realms/diwise-local/protocol/openid-connect/token'
+      OAUTH2_TOKEN_URL: 'https://iam.diwise.local:8444/realms/diwise-local/protocol/openid-connect/token'
+      OAUTH2_REALM_INSECURE: 'true'
       OAUTH2_CLIENT_ID: 'diwise-devmgmt-api'
       OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
       APPSERVER_FACADE: 'chirpstack'
@@ -81,6 +70,8 @@ services:
       POSTGRES_PORT: '5432'
       POSTGRES_DBNAME: 'orion'
       POSTGRES_SSLMODE: 'disable'
+    volumes:
+      - ./configs/diwise/etc-hosts.conf:/etc/hosts
     ports:
       - '8080'
     healthcheck:
@@ -91,7 +82,7 @@ services:
       start_period: 10s
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-6a85b734f00bb41e1ededcce825a59fa325a3da4'
+    image: 'ghcr.io/diwise/iot-core:prod-3ce509bfbcca1a0239a0360df86f70de6a0b8ce1'
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -101,8 +92,10 @@ services:
     environment:
       RABBITMQ_HOST: 'rabbitmq'
       DEV_MGMT_URL: 'http://iot-device-mgmt:8080'
+      DEVMGMT_CLIENT_DEBUG: 'true'
       MEASUREMENTS_URL: "https://iot-device-mgmt:8080/measurements"
-      OAUTH2_TOKEN_URL: 'http://keycloak:8080/realms/diwise-local/protocol/openid-connect/token'
+      OAUTH2_TOKEN_URL: 'https://iam.diwise.local:8444/realms/diwise-local/protocol/openid-connect/token'
+      OAUTH2_REALM_INSECURE: 'true'
       OAUTH2_CLIENT_ID: 'diwise-devmgmt-api'
       OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
       POSTGRES_USER: 'postgres'
@@ -113,6 +106,7 @@ services:
       POSTGRES_SSLMODE: 'disable'
     volumes:
       - ./configs/diwise/functions.csv:/opt/diwise/config/functions.csv
+      - ./configs/diwise/etc-hosts.conf:/etc/hosts
     ports:
       - '8080'
     healthcheck:
@@ -143,6 +137,7 @@ services:
     volumes:
       - ./configs/diwise/data/devices.csv:/opt/diwise/config/devices.csv
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
+      - ./configs/diwise/etc-hosts.conf:/etc/hosts
     ports:
       - '8080'
     healthcheck:
@@ -193,6 +188,7 @@ services:
     volumes:
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
       - ./configs/diwise/iotevents-cloudevents.yaml:/opt/diwise/config/cloudevents.yaml
+      - ./configs/diwise/etc-hosts.conf:/etc/hosts
     ports:
       - '8080'
       - '8000'
@@ -204,7 +200,7 @@ services:
       start_period: 10s
 
   iot-things:
-    image: 'ghcr.io/diwise/iot-things:prod-a526ad7ac0ad682f372dbfe38b802009a0f684d1'
+    image: 'ghcr.io/diwise/iot-things:prod-7321ddc5bcc7e4b91f8311da96649a8f0a5660b2'
     restart: always
     depends_on:
       keycloak:
@@ -225,6 +221,7 @@ services:
       - ./configs/diwise/iot-things-auth.rego:/opt/diwise/config/authz.rego
       - ./configs/diwise/things.csv:/opt/diwise/config/things.csv
       - ./configs/diwise/config.yaml:/opt/diwise/config/config.yaml
+      - ./configs/diwise/etc-hosts.conf:/etc/hosts
     ports:
       - '8080'
     healthcheck:
@@ -249,6 +246,7 @@ services:
     volumes:
       - ./configs/diwise/context-broker.yaml:/opt/diwise/config/default.yaml
       - ./configs/diwise/context-broker-auth.rego:/opt/diwise/config/authz.rego
+      - ./configs/diwise/etc-hosts.conf:/etc/hosts
     ports:
       - '8080'
     healthcheck:
@@ -364,29 +362,30 @@ services:
       start_period: 20s
 
   keycloak:
-    image: quay.io/keycloak/keycloak:20.0
+    image: quay.io/keycloak/keycloak:26.0
     command:
       - 'start-dev'
-      - '--hostname=iam.diwise.local'
-      - '--hostname-port=8444'
-      - '--proxy=edge'
+      - '--hostname=https://iam.diwise.local:8444'
+      - '--proxy-headers=xforwarded'
       - '--health-enabled=true'
       - '-Dkeycloak.migration.action=import'
       - '-Dkeycloak.migration.provider=singleFile'
       - '-Dkeycloak.migration.strategy=OVERWRITE_EXISTING'
       - '-Dkeycloak.migration.file=/application-realm.json'
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HTTP_ENABLED: true
     ports:
       - '8080'
+      - '9000'
     volumes:
       - ./configs/keycloak/realm.json:/application-realm.json
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health/ready" ]
+      test: [ "CMD-SHELL", "exec 3<>/dev/tcp/keycloak/9000;echo -e 'GET /health/ready HTTP/1.1\r\nHost: keycloak:9000\r\nConnection: close\r\n\r\n' >&3;if [ $? -eq 0 ]; then echo 'Healthcheck Successful';exit 0;else echo 'Healthcheck Failed';exit 1;fi;" ]
       interval: 5s
       timeout: 5s
-      retries: 36
+      retries: 12
       start_period: 10s
 
   grafana:

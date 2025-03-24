@@ -44,7 +44,7 @@ allow = response {
 	response := {"tenants": token.payload.tenants}
 }
 
-issuers := {"http://keycloak:8080/realms/diwise-local"}
+issuers := {"https://iam.diwise.local:8444/realms/diwise-local"}
 
 # Connect to the specified issuer to query for openid metadata
 metadata_discovery(issuer) := http.send({
@@ -52,6 +52,7 @@ metadata_discovery(issuer) := http.send({
 	"method": "GET",
 	"force_cache": true,
 	"force_cache_duration_seconds": 86400,
+	"tls_insecure_skip_verify": true
 }).body
 
 # Cache response for 24 hours
@@ -63,17 +64,12 @@ jwks_request(url) := http.send({
 	"method": "GET",
 	"force_cache": true,
 	"force_cache_duration_seconds": 3600, # Cache response for an hour
+	"tls_insecure_skip_verify": true
 })
 
 is_valid_token {
-	# We need to replace the public issuer URL, that the pod can not access, with the
-	# internal URL that this pod CAN access without messing around with host networking.
-	# This is for local testing using docker compose.
 
-	issuer := replace(token.payload.iss, "iam.diwise.local:8444", "keycloak:8080")
-	http_issuer := replace(issuer, "https", "http")
-
-	openid_config := metadata_discovery(http_issuer)
+	openid_config := metadata_discovery(token.payload.iss)
 	jwks := jwks_request(openid_config.jwks_uri).raw_body
 
 	verified := io.jwt.verify_rs256(input.token, jwks)
