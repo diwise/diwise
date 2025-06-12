@@ -51,8 +51,6 @@ services:
     depends_on:
       iot-device-mgmt:
         condition: service_healthy
-      timescale:
-        condition: service_healthy
     environment:
       MQTT_DISABLED: 'true'
       RABBITMQ_HOST: 'rabbitmq'
@@ -86,8 +84,6 @@ services:
     restart: always
     depends_on:
       iot-device-mgmt:
-        condition: service_healthy
-      timescale:
         condition: service_healthy
     environment:
       RABBITMQ_HOST: 'rabbitmq'
@@ -144,18 +140,14 @@ services:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
       interval: 2s
       timeout: 5s
-      retries: 60
+      retries: 30
       start_period: 10s
 
   iot-transform-fiware:
     image: 'ghcr.io/diwise/iot-transform-fiware:prod-7e46c3ea45f03f27d969536c025fe216682281a1'
     restart: always
     depends_on:
-      rabbitmq:
-        condition: service_healthy
-      context-broker:
-        condition: service_healthy
-      iot-things:
+      iot-device-mgmt:
         condition: service_healthy
     environment:
       NGSI_CB_URL: 'http://context-broker:8080'
@@ -170,12 +162,8 @@ services:
   iot-events:
     image: 'ghcr.io/diwise/iot-events:prod-c9ea3b2ef441a5f5f790f5e5af2abcba454276db'
     restart: always
-    depends_on:
-      keycloak:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-      iot-device-mgmt:
+    depends_on: 
+     iot-device-mgmt:
         condition: service_healthy
     environment:
       RABBITMQ_HOST: 'rabbitmq'
@@ -203,11 +191,7 @@ services:
     image: 'ghcr.io/diwise/iot-things:prod-7321ddc5bcc7e4b91f8311da96649a8f0a5660b2'
     restart: always
     depends_on:
-      keycloak:
-        condition: service_healthy
-      timescale:
-        condition: service_healthy
-      rabbitmq:
+      iot-device-mgmt:
         condition: service_healthy
     environment:
       RABBITMQ_HOST: 'rabbitmq'
