@@ -134,6 +134,7 @@ services:
       - ./configs/diwise/data/devices.csv:/opt/diwise/config/devices.csv
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
       - ./configs/diwise/etc-hosts.conf:/etc/hosts
+      - ./configs/diwise/data/config.yaml:/opt/diwise/config/config.yaml
     ports:
       - '8080'
     healthcheck:
