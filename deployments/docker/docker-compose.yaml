@@ -1,7 +1,6 @@
 services:
-
   proxy:
-    image: 'registry.access.redhat.com/ubi9/nginx-124'
+    image: "registry.access.redhat.com/ubi9/nginx-124"
     command:
       - nginx
       - -g
@@ -12,108 +11,109 @@ services:
       - ./configs/proxy/openssl/server.crt:/etc/ssl/server.crt
       - ./configs/proxy/openssl/server.key:/etc/ssl/server.key
     ports:
-      - '8443:443'
-      - '8444:444'
+      - "8443:443"
+      - "8444:444"
 
   diwise-web:
-    image: 'ghcr.io/diwise/diwise-web:prod-3d5f60aed3cb59763716a68d8a9a9742fa4d704c'
+    image: "ghcr.io/diwise/diwise-web@sha256:4bcff5c7c93de1cee0802f8e0ecae7e31c85f75ae2c8ad4d700c6ea81bbb78e7"
     restart: always
     depends_on:
       iot-device-mgmt:
         condition: service_healthy
     environment:
-      APP_ROOT: 'https://diwise.local:8443'
-      CONTENT_SECURITY_POLICY: 'report'
-      CONTROL_PORT: '8000'
-      DEV_MGMT_URL: 'http://iot-device-mgmt:8080/api/v0/devices'
-      MEASUREMENTS_URL: 'http://iot-events:8080/api/v0/measurements'
-      THINGS_URL: 'http://iot-things:8080/api/v0/things'
-      MSG_FWD_ENDPOINT: 'http://iot-agent:8080/api/v0/messages'
-      OAUTH2_REALM_URL: 'https://iam.diwise.local:8444/realms/diwise-local'
-      OAUTH2_REALM_INSECURE: 'true'
-      OAUTH2_CLIENT_ID: 'diwise-frontend-par'
-      OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
+      APP_ROOT: "https://diwise.local:8443"
+      CONTENT_SECURITY_POLICY: "report"
+      CONTROL_PORT: "8000"
+      DEV_MGMT_URL: "http://iot-device-mgmt:8080/api/v0/devices"
+      MEASUREMENTS_URL: "http://iot-events:8080/api/v0/measurements"
+      THINGS_URL: "http://iot-things:8080/api/v0/things"
+      MSG_FWD_ENDPOINT: "http://iot-agent:8080/api/v0/messages"
+      OAUTH2_REALM_URL: "https://iam.diwise.local:8444/realms/diwise-local"
+      OAUTH2_REALM_INSECURE: "true"
+      OAUTH2_CLIENT_ID: "diwise-frontend-par"
+      OAUTH2_CLIENT_SECRET: "615241704865544572616B61474E494B65504861574E7449744943655269654E"
     volumes:
       - ./configs/diwise/etc-hosts.conf:/etc/hosts
     ports:
-      - '8000'
-      - '8080'
+      - "8000"
+      - "8080"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/readyz" ]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/readyz"]
       interval: 2s
       timeout: 5s
       retries: 30
       start_period: 10s
 
   iot-agent:
-    image: 'ghcr.io/diwise/iot-agent:prod-81ec3796c00ef55c00c098b66aaacf43aacddf5b'
+    image: "ghcr.io/diwise/iot-agent@sha256:b06f6c5fed56b9e4829a6a4c75d672e60d79eba8a48ba4ac967238f0541cfca2"
     restart: always
     depends_on:
       iot-device-mgmt:
         condition: service_healthy
     environment:
-      MQTT_DISABLED: 'true'
-      RABBITMQ_HOST: 'rabbitmq'
-      DEV_MGMT_URL: 'http://iot-device-mgmt:8080'
-      DEVMGMT_CLIENT_DEBUG: 'true'
-      MSG_FWD_ENDPOINT: 'http://iot-agent:8080/api/v0/messages'
-      OAUTH2_TOKEN_URL: 'https://iam.diwise.local:8444/realms/diwise-local/protocol/openid-connect/token'
-      OAUTH2_REALM_INSECURE: 'true'
-      OAUTH2_CLIENT_ID: 'diwise-devmgmt-api'
-      OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
-      APPSERVER_FACADE: 'chirpstack'
-      POSTGRES_USER: 'postgres'
-      POSTGRES_PASSWORD: 'password'
-      POSTGRES_HOST: 'timescale'
-      POSTGRES_PORT: '5432'
-      POSTGRES_DBNAME: 'orion'
-      POSTGRES_SSLMODE: 'disable'
+      MQTT_DISABLED: "true"
+      RABBITMQ_HOST: "rabbitmq"
+      DEV_MGMT_URL: "http://iot-device-mgmt:8080"
+      DEVMGMT_CLIENT_DEBUG: "true"
+      MSG_FWD_ENDPOINT: "http://iot-agent:8080/api/v0/messages"
+      OAUTH2_TOKEN_URL: "https://iam.diwise.local:8444/realms/diwise-local/protocol/openid-connect/token"
+      OAUTH2_REALM_INSECURE: "true"
+      OAUTH2_CLIENT_ID: "diwise-devmgmt-api"
+      OAUTH2_CLIENT_SECRET: "615241704865544572616B61474E494B65504861574E7449744943655269654E"
+      APPSERVER_FACADE: "chirpstack"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_HOST: "timescale"
+      POSTGRES_PORT: "5432"
+      POSTGRES_DBNAME: "orion"
+      POSTGRES_SSLMODE: "disable"
     volumes:
       - ./configs/diwise/etc-hosts.conf:/etc/hosts
     ports:
-      - '8080'
+      - "8000"
+      - "8080"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/readyz"]
       interval: 2s
       timeout: 5s
       retries: 60
       start_period: 10s
 
   iot-core:
-    image: 'ghcr.io/diwise/iot-core:prod-3ce509bfbcca1a0239a0360df86f70de6a0b8ce1'
+    image: "ghcr.io/diwise/iot-core@sha256:66116cf48fc84517cba881b8dc087f1ee70eb20c5602bb0fba640b5b9af23192"
     restart: always
     depends_on:
       iot-device-mgmt:
         condition: service_healthy
     environment:
-      RABBITMQ_HOST: 'rabbitmq'
-      DEV_MGMT_URL: 'http://iot-device-mgmt:8080'
-      DEVMGMT_CLIENT_DEBUG: 'true'
+      RABBITMQ_HOST: "rabbitmq"
+      DEV_MGMT_URL: "http://iot-device-mgmt:8080"
+      DEVMGMT_CLIENT_DEBUG: "true"
       MEASUREMENTS_URL: "https://iot-device-mgmt:8080/measurements"
-      OAUTH2_TOKEN_URL: 'https://iam.diwise.local:8444/realms/diwise-local/protocol/openid-connect/token'
-      OAUTH2_REALM_INSECURE: 'true'
-      OAUTH2_CLIENT_ID: 'diwise-devmgmt-api'
-      OAUTH2_CLIENT_SECRET: '615241704865544572616B61474E494B65504861574E7449744943655269654E'
-      POSTGRES_USER: 'postgres'
-      POSTGRES_PASSWORD: 'password'
-      POSTGRES_HOST: 'timescale'
-      POSTGRES_PORT: '5432'
-      POSTGRES_DBNAME: 'orion'
-      POSTGRES_SSLMODE: 'disable'
+      OAUTH2_TOKEN_URL: "https://iam.diwise.local:8444/realms/diwise-local/protocol/openid-connect/token"
+      OAUTH2_REALM_INSECURE: "true"
+      OAUTH2_CLIENT_ID: "diwise-devmgmt-api"
+      OAUTH2_CLIENT_SECRET: "615241704865544572616B61474E494B65504861574E7449744943655269654E"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_HOST: "timescale"
+      POSTGRES_PORT: "5432"
+      POSTGRES_DBNAME: "orion"
+      POSTGRES_SSLMODE: "disable"
     volumes:
       - ./configs/diwise/functions.csv:/opt/diwise/config/functions.csv
       - ./configs/diwise/etc-hosts.conf:/etc/hosts
     ports:
-      - '8080'
+      - "8080"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 2s
       timeout: 5s
       retries: 60
       start_period: 10s
 
   iot-device-mgmt:
-    image: 'ghcr.io/diwise/iot-device-mgmt:prod-6ded75a38109494a4f23edbdb95b113c8f7de48f'
+    image: "ghcr.io/diwise/iot-device-mgmt@sha256:4171cff0057d0252ac8012287644ed61ef12cdc3449746caa5aaa39d8a68db57"
     restart: always
     depends_on:
       keycloak:
@@ -123,104 +123,108 @@ services:
       timescale:
         condition: service_healthy
     environment:
-      RABBITMQ_HOST: 'rabbitmq'
-      POSTGRES_USER: 'postgres'
-      POSTGRES_PASSWORD: 'password'
-      POSTGRES_HOST: 'timescale'
-      POSTGRES_PORT: '5432'
-      POSTGRES_DBNAME: 'orion'
-      POSTGRES_SSLMODE: 'disable'
+      RABBITMQ_HOST: "rabbitmq"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_HOST: "timescale"
+      POSTGRES_PORT: "5432"
+      POSTGRES_DBNAME: "orion"
+      POSTGRES_SSLMODE: "disable"
     volumes:
       - ./configs/diwise/data/devices.csv:/opt/diwise/config/devices.csv
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
       - ./configs/diwise/etc-hosts.conf:/etc/hosts
       - ./configs/diwise/data/config.yaml:/opt/diwise/config/config.yaml
     ports:
-      - '8080'
+      - "8000"
+      - "8080"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/readyz"]
       interval: 2s
       timeout: 5s
       retries: 30
       start_period: 10s
 
   iot-transform-fiware:
-    image: 'ghcr.io/diwise/iot-transform-fiware:prod-7e46c3ea45f03f27d969536c025fe216682281a1'
+    image: "ghcr.io/diwise/iot-transform-fiware@sha256:e3263c3e9f2b05dbd2d5945f4a071cac249c41af04ec49e4c844d2cfbe6bae71"
     restart: always
     depends_on:
       iot-device-mgmt:
         condition: service_healthy
     environment:
-      NGSI_CB_URL: 'http://context-broker:8080'
-      RABBITMQ_HOST: 'rabbitmq'
+      NGSI_CB_URL: "http://context-broker:8080"
+      RABBITMQ_HOST: "rabbitmq"
+    ports:
+      - "8000"
+      - "8080"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/readyz" ]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/readyz"]
       interval: 2s
       timeout: 5s
       retries: 30
       start_period: 10s
 
   iot-events:
-    image: 'ghcr.io/diwise/iot-events:prod-c9ea3b2ef441a5f5f790f5e5af2abcba454276db'
+    image: "ghcr.io/diwise/iot-events@sha256:8e4e10e04f72b46ce42abc1d95ed7d59b253334ee14f23b14bf00677edee7c58"
     restart: always
-    depends_on: 
-     iot-device-mgmt:
+    depends_on:
+      iot-device-mgmt:
         condition: service_healthy
     environment:
-      RABBITMQ_HOST: 'rabbitmq'
-      POSTGRES_USER: 'postgres'
-      POSTGRES_PASSWORD: 'password'
-      POSTGRES_HOST: 'timescale'
-      POSTGRES_PORT: '5432'
-      POSTGRES_DBNAME: 'orion'
-      POSTGRES_SSLMODE: 'disable'
+      RABBITMQ_HOST: "rabbitmq"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_HOST: "timescale"
+      POSTGRES_PORT: "5432"
+      POSTGRES_DBNAME: "orion"
+      POSTGRES_SSLMODE: "disable"
     volumes:
       - ./configs/diwise/devmgmt-auth.rego:/opt/diwise/config/authz.rego
       - ./configs/diwise/iotevents-cloudevents.yaml:/opt/diwise/config/cloudevents.yaml
       - ./configs/diwise/etc-hosts.conf:/etc/hosts
     ports:
-      - '8080'
-      - '8000'
+      - "8080"
+      - "8000"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/readyz" ]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/readyz"]
       interval: 2s
       timeout: 5s
       retries: 30
       start_period: 10s
 
   iot-things:
-    image: 'ghcr.io/diwise/iot-things:prod-7321ddc5bcc7e4b91f8311da96649a8f0a5660b2'
+    image: "ghcr.io/diwise/iot-things@sha256:e2612e832edbd7f23b4db00f65a9d202dd30ec9d1becd2dfd4cd930f519fc61f"
     restart: always
     depends_on:
       iot-device-mgmt:
         condition: service_healthy
     environment:
-      RABBITMQ_HOST: 'rabbitmq'
-      POSTGRES_USER: 'postgres'
-      POSTGRES_PASSWORD: 'password'
-      POSTGRES_HOST: 'timescale'
-      POSTGRES_PORT: '5432'
-      POSTGRES_DBNAME: 'orion'
-      POSTGRES_SSLMODE: 'disable'
+      RABBITMQ_HOST: "rabbitmq"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_HOST: "timescale"
+      POSTGRES_PORT: "5432"
+      POSTGRES_DBNAME: "orion"
+      POSTGRES_SSLMODE: "disable"
     volumes:
       - ./configs/diwise/iot-things-auth.rego:/opt/diwise/config/authz.rego
       - ./configs/diwise/things.csv:/opt/diwise/config/things.csv
       - ./configs/diwise/config.yaml:/opt/diwise/config/config.yaml
       - ./configs/diwise/etc-hosts.conf:/etc/hosts
     ports:
-      - '8080'
+      - "8080"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 10s
       timeout: 5s
       retries: 60
       start_period: 10s
 
   context-broker:
-    image: 'ghcr.io/diwise/context-broker:prod-9769f074c8b962ee0f02e9650c0869b2cabdc3f0'
+    image: "ghcr.io/diwise/context-broker@sha256:16aaf1c4789e6eb1adbb48c4555a9b04f8bd294d01b8d8edcc36eacc4826f41f"
     restart: always
     environment:
-      CONTEXT_BROKER_CLIENT_DEBUG: 'true'
+      CONTEXT_BROKER_CLIENT_DEBUG: "true"
     depends_on:
       keycloak:
         condition: service_healthy
@@ -233,37 +237,37 @@ services:
       - ./configs/diwise/context-broker-auth.rego:/opt/diwise/config/authz.rego
       - ./configs/diwise/etc-hosts.conf:/etc/hosts
     ports:
-      - '8080'
+      - "8080"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 2s
       timeout: 2s
       retries: 30
       start_period: 5s
 
   orion-ld:
-    image: 'quay.io/fiware/orion-ld@sha256:d1c2b50ba47046c2dd0bcd786970469e21d6998b08ad09b56da8fb17cd267ef6'
+    image: "quay.io/fiware/orion-ld@sha256:d1c2b50ba47046c2dd0bcd786970469e21d6998b08ad09b56da8fb17cd267ef6"
     restart: always
-    command: [ '-experimental', '-logLevel', 'DEBUG' ]
+    command: ["-experimental", "-logLevel", "DEBUG"]
     environment:
-      ORIONLD_MONGO_HOST: 'mongodb'
-      ORIONLD_MONGO_USER: 'admin'
-      ORIONLD_MONGO_PASSWORD: 'password'
-      ORIONLD_TROE: 'TRUE'
-      ORIONLD_TROE_USER: 'postgres'
-      ORIONLD_TROE_PWD: 'password'
-      ORIONLD_TROE_HOST: 'timescale'
-      ORIONLD_LOG_FOR_HUMANS: 'TRUE'
-      ORIONLD_DISABLE_FILE_LOG: 'TRUE'
+      ORIONLD_MONGO_HOST: "mongodb"
+      ORIONLD_MONGO_USER: "admin"
+      ORIONLD_MONGO_PASSWORD: "password"
+      ORIONLD_TROE: "TRUE"
+      ORIONLD_TROE_USER: "postgres"
+      ORIONLD_TROE_PWD: "password"
+      ORIONLD_TROE_HOST: "timescale"
+      ORIONLD_LOG_FOR_HUMANS: "TRUE"
+      ORIONLD_DISABLE_FILE_LOG: "TRUE"
     depends_on:
       mongodb:
         condition: service_healthy
       timescale:
         condition: service_healthy
     ports:
-      - '1026'
+      - "1026"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:1026/ngsi-ld/v1/types" ]
+      test: ["CMD", "curl", "-f", "http://localhost:1026/ngsi-ld/v1/types"]
       interval: 10s
       timeout: 5s
       retries: 30
@@ -276,15 +280,15 @@ services:
       orion-ld:
         condition: service_healthy
     environment:
-      DATASOURCES_DEFAULT_HOST: 'timescale'
-      DATASOURCES_DEFAULT_USERNAME: 'postgres'
-      DATASOURCES_DEFAULT_PASSWORD: 'password'
-      DATASOURCES_DEFAULT_DATABASE: 'orion'
-      BASEPATH: '/ngsi-ld/v1'
-#    volumes:
-#      - './configs/diwise/mintaka-logging.xml:/app/resources/logback.xml'
+      DATASOURCES_DEFAULT_HOST: "timescale"
+      DATASOURCES_DEFAULT_USERNAME: "postgres"
+      DATASOURCES_DEFAULT_PASSWORD: "password"
+      DATASOURCES_DEFAULT_DATABASE: "orion"
+      BASEPATH: "/ngsi-ld/v1"
+    #    volumes:
+    #      - './configs/diwise/mintaka-logging.xml:/app/resources/logback.xml'
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 2s
       timeout: 2s
       retries: 30
@@ -296,49 +300,61 @@ services:
     image: timescale/timescaledb-ha:pg17-ts2.18
     restart: always
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 12
       start_period: 10s
     environment:
-      POSTGRES_PASSWORD: 'password'
-      POSTGRES_HOST_AUTH_METHOD: 'trust'
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
     ports:
       - "5432"
 
   mongodb:
     image: mongo:5
     healthcheck:
-      test: [ "CMD-SHELL", "mongo", "--port", "27017", "-u", "admin", "-p", "password", "--eval", "\"db.adminCommand('ping')\"" ]
+      test:
+        [
+          "CMD-SHELL",
+          "mongo",
+          "--port",
+          "27017",
+          "-u",
+          "admin",
+          "-p",
+          "password",
+          "--eval",
+          '"db.adminCommand(''ping'')"',
+        ]
       interval: 5s
       timeout: 1s
       retries: 12
       start_period: 10s
     environment:
-      MONGO_INITDB_ROOT_USERNAME: 'admin'
-      MONGO_INITDB_ROOT_PASSWORD: 'password'
+      MONGO_INITDB_ROOT_USERNAME: "admin"
+      MONGO_INITDB_ROOT_PASSWORD: "password"
     ports:
-      - '27017'
+      - "27017"
     command: --nojournal --quiet
     volumes:
       - mongo-db:/data
 
   rabbitmq:
-    image: 'bitnami/rabbitmq:3.11'
+    image: "bitnami/rabbitmq:3.11"
     environment:
-      RABBITMQ_DEFAULT_USER: 'user'
-      RABBITMQ_DEFAULT_PASS: 'bitnami'
+      RABBITMQ_DEFAULT_USER: "user"
+      RABBITMQ_DEFAULT_PASS: "bitnami"
     ports:
-      - '4369'
-      - '5672'
-      - '25672'
-      - '15672'
-      - '15692'
+      - "4369"
+      - "5672"
+      - "25672"
+      - "15672"
+      - "15692"
     volumes:
-      - 'rabbitmq_data:/bitnami'
-      - './configs/rabbitmq/enabled_plugins:/opt/bitnami/rabbitmq/etc/rabbitmq/enabled_plugins'
-      - './configs/rabbitmq/rabbitmq.conf:/opt/bitnami/rabbitmq/etc/rabbitmq/rabbitmq.conf'
+      - "rabbitmq_data:/bitnami"
+      - "./configs/rabbitmq/enabled_plugins:/opt/bitnami/rabbitmq/etc/rabbitmq/enabled_plugins"
+      - "./configs/rabbitmq/rabbitmq.conf:/opt/bitnami/rabbitmq/etc/rabbitmq/rabbitmq.conf"
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 2s
@@ -349,25 +365,29 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
     command:
-      - 'start-dev'
-      - '--hostname=https://iam.diwise.local:8444'
-      - '--proxy-headers=xforwarded'
-      - '--health-enabled=true'
-      - '-Dkeycloak.migration.action=import'
-      - '-Dkeycloak.migration.provider=singleFile'
-      - '-Dkeycloak.migration.strategy=OVERWRITE_EXISTING'
-      - '-Dkeycloak.migration.file=/application-realm.json'
+      - "start-dev"
+      - "--hostname=https://iam.diwise.local:8444"
+      - "--proxy-headers=xforwarded"
+      - "--health-enabled=true"
+      - "-Dkeycloak.migration.action=import"
+      - "-Dkeycloak.migration.provider=singleFile"
+      - "-Dkeycloak.migration.strategy=OVERWRITE_EXISTING"
+      - "-Dkeycloak.migration.file=/application-realm.json"
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KC_HTTP_ENABLED: true
     ports:
-      - '8080'
-      - '9000'
+      - "8080"
+      - "9000"
     volumes:
       - ./configs/keycloak/realm.json:/application-realm.json
     healthcheck:
-      test: [ "CMD-SHELL", "exec 3<>/dev/tcp/keycloak/9000;echo -e 'GET /health/ready HTTP/1.1\r\nHost: keycloak:9000\r\nConnection: close\r\n\r\n' >&3;if [ $? -eq 0 ]; then echo 'Healthcheck Successful';exit 0;else echo 'Healthcheck Failed';exit 1;fi;" ]
+      test:
+        [
+          "CMD-SHELL",
+          "exec 3<>/dev/tcp/keycloak/9000;echo -e 'GET /health/ready HTTP/1.1\r\nHost: keycloak:9000\r\nConnection: close\r\n\r\n' >&3;if [ $? -eq 0 ]; then echo 'Healthcheck Successful';exit 0;else echo 'Healthcheck Failed';exit 1;fi;",
+        ]
       interval: 5s
       timeout: 5s
       retries: 12
@@ -375,7 +395,7 @@ services:
 
   grafana:
     image: grafana/grafana:11.5.2
-    command: [ '--config', '/usr/share/grafana/custom.ini' ]
+    command: ["--config", "/usr/share/grafana/custom.ini"]
     environment:
       GF_SERVER_DOMAIN: diwise.local
       GF_SERVER_ROOT_URL: https://diwise.local:8443/grafana/
@@ -386,9 +406,10 @@ services:
       - ./configs/grafana/custom.ini:/usr/share/grafana/custom.ini
       - grafana-data:/var/lib/grafana
     ports:
-      - '3000'
+      - "3000"
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health" ]
+      test:
+        ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health"]
       interval: 2s
       timeout: 2s
       retries: 30
