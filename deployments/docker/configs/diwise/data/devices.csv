@@ -1,2 +1,1 @@
 devEUI;internalID;lat;lon;where;types;decoder;name;description;active;tenant;interval;source
-somedeveui;2172b317-13fe-40a0-9e01-2d1ea698dbd6;0.0;0.0;indoors;urn:oma:lwm2m:ext:3303;elsys_codec;;;true;default;0;source
