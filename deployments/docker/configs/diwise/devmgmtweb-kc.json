@@ -1,7 +1,0 @@
-{
-    "realm": "diwise-local",
-    "auth-server-url": "https://iam.diwise.local:8444",
-    "ssl-required": "external",
-    "resource": "diwise-devmgmt-web",
-    "public-client": true
-}

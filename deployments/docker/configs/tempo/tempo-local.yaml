@@ -31,10 +31,10 @@ storage:
       v2_index_downsample_bytes: 1000
       v2_encoding: zstd
     wal:
-      path: /tmp/tempo/wal
+      path: /var/tempo/wal
       v2_encoding: snappy
     local:
-      path: /tmp/tempo/blocks
+      path: /var/tempo/blocks
     pool:
       max_workers: 100
       queue_depth: 10000
