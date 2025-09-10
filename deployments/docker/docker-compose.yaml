@@ -15,7 +15,7 @@ services:
       - "8444:444"
 
   diwise-web:
-    image: "ghcr.io/diwise/diwise-web@sha256:4bcff5c7c93de1cee0802f8e0ecae7e31c85f75ae2c8ad4d700c6ea81bbb78e7"
+    image: "ghcr.io/diwise/diwise-web@sha256:dde82c4a4eb5b01bf954500b8def96c09d15bd4fc104d72ecae71fcc04ab0c7e"
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -45,7 +45,7 @@ services:
       start_period: 10s
 
   iot-agent:
-    image: "ghcr.io/diwise/iot-agent@sha256:b06f6c5fed56b9e4829a6a4c75d672e60d79eba8a48ba4ac967238f0541cfca2"
+    image: "ghcr.io/diwise/iot-agent@sha256:82573fb7f8ff76604b8d3b69efb8d912ac83785cd050cce1a383670916160d51"
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -80,7 +80,7 @@ services:
       start_period: 10s
 
   iot-core:
-    image: "ghcr.io/diwise/iot-core@sha256:66116cf48fc84517cba881b8dc087f1ee70eb20c5602bb0fba640b5b9af23192"
+    image: "ghcr.io/diwise/iot-core@sha256:b3969e7a13f931088eea0a52c26b79d25ff42f17339aae3e9d6c23963d8ccde9"
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -113,7 +113,7 @@ services:
       start_period: 10s
 
   iot-device-mgmt:
-    image: "ghcr.io/diwise/iot-device-mgmt@sha256:4171cff0057d0252ac8012287644ed61ef12cdc3449746caa5aaa39d8a68db57"
+    image: "ghcr.io/diwise/iot-device-mgmt@sha256:dc33066198668f8be6a04273d05696dbe096a78ba7dca0a92e67b0aca45b3314"
     restart: always
     depends_on:
       keycloak:
@@ -146,7 +146,7 @@ services:
       start_period: 10s
 
   iot-transform-fiware:
-    image: "ghcr.io/diwise/iot-transform-fiware@sha256:e3263c3e9f2b05dbd2d5945f4a071cac249c41af04ec49e4c844d2cfbe6bae71"
+    image: "ghcr.io/diwise/iot-transform-fiware@sha256:84ca7b1a05f263a2ecd02a92218e17a1bdf0e1c40ea0aebf89350c5a2af27d03"
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -165,7 +165,7 @@ services:
       start_period: 10s
 
   iot-events:
-    image: "ghcr.io/diwise/iot-events@sha256:8e4e10e04f72b46ce42abc1d95ed7d59b253334ee14f23b14bf00677edee7c58"
+    image: "ghcr.io/diwise/iot-events@sha256:3aebdd731030e6fdce073ae9f70efcc31ffaf4d33af1d290eca4836c8c2f27ee"
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -193,7 +193,7 @@ services:
       start_period: 10s
 
   iot-things:
-    image: "ghcr.io/diwise/iot-things@sha256:e2612e832edbd7f23b4db00f65a9d202dd30ec9d1becd2dfd4cd930f519fc61f"
+    image: "ghcr.io/diwise/iot-things@sha256:22475794d7fa956f1273eb0e7d4888b784ac160253995b15cc3b4feb3b56def8"
     restart: always
     depends_on:
       iot-device-mgmt:
@@ -221,7 +221,7 @@ services:
       start_period: 10s
 
   context-broker:
-    image: "ghcr.io/diwise/context-broker@sha256:16aaf1c4789e6eb1adbb48c4555a9b04f8bd294d01b8d8edcc36eacc4826f41f"
+    image: "ghcr.io/diwise/context-broker@sha256:86b69a97916da00634b41e1634312e5008f96b8b0aa90fd60573a3d7af3e51c7"
     restart: always
     environment:
       CONTEXT_BROKER_CLIENT_DEBUG: "true"
