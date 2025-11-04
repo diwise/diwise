@@ -341,7 +341,7 @@ services:
       - mongo-db:/data
 
   rabbitmq:
-    image: "bitnami/rabbitmq:3.11"
+    image: "bitnamilegacy/rabbitmq:3.11"
     environment:
       RABBITMQ_DEFAULT_USER: "user"
       RABBITMQ_DEFAULT_PASS: "bitnami"
