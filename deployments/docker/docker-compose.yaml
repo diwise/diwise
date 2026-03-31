@@ -171,6 +171,10 @@ services:
       iot-device-mgmt:
         condition: service_healthy
     environment:
+      OAUTH2_TOKEN_URL: "https://iam.diwise.local:8444/realms/diwise-local/protocol/openid-connect/token"
+      OAUTH2_REALM_INSECURE: "true"
+      OAUTH2_CLIENT_ID: "diwise-devmgmt-api"
+      OAUTH2_CLIENT_SECRET: "615241704865544572616B61474E494B65504861574E7449744943655269654E"
       RABBITMQ_HOST: "rabbitmq"
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "password"
