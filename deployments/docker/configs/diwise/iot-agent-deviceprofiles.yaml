@@ -1,1 +1,8 @@
-profiles:
+Example_Profile:
+  profile_name: example_profile
+  tenant: default
+  activate: true
+  location: true
+  tags: 
+    enabled: false
+    metadata: false
