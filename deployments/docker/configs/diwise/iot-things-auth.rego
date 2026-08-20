@@ -4,7 +4,7 @@ package example.authz
 
 default allow := false
 
-allow = response {
+allow := response if {
 	is_valid_token
 
 	input.method == "GET"
@@ -14,7 +14,7 @@ allow = response {
 	response := {"tenants": token.payload.tenants}
 }
 
-allow = response {
+allow := response if {
 	is_valid_token
 
 	input.method == "POST"
@@ -24,7 +24,7 @@ allow = response {
 	response := {"tenants": token.payload.tenants}
 }
 
-allow = response {
+allow := response if {
 	is_valid_token
 
 	input.method == "PATCH"
@@ -34,7 +34,7 @@ allow = response {
 	response := {"tenants": token.payload.tenants}
 }
 
-allow = response {
+allow := response if {
 	is_valid_token
 
 	input.method == "PUT"
@@ -67,7 +67,7 @@ jwks_request(url) := http.send({
 	"tls_insecure_skip_verify": true
 })
 
-is_valid_token {
+is_valid_token if {
 
 	openid_config := metadata_discovery(token.payload.iss)
 	jwks := jwks_request(openid_config.jwks_uri).raw_body
@@ -76,6 +76,6 @@ is_valid_token {
 	verified == true
 }
 
-token := {"payload": payload} {
+token := {"payload": payload} if {
 	[_, payload, _] := io.jwt.decode(input.token)
 }
