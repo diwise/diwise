@@ -339,7 +339,7 @@ services:
       - "27017"
     command: --nojournal
     volumes:
-      - mongo-db:/data
+      - mongo-db:/data/db
 
   rabbitmq:
     image: "bitnamilegacy/rabbitmq:3.11"
